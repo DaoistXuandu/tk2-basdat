@@ -5,7 +5,8 @@ import User from "../components/user";
 
 export default function Register() {
     return (
-        <div className="mt-12">
+        <div className="">
+            <NavBar status={"block"} />
             <User text={"Register"} status={"Register"} role={false} />
         </div>
     )
