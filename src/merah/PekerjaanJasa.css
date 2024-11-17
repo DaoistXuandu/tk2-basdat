@@ -1,0 +1,100 @@
+/* General container styling */
+.container {
+    width: 90%; /* Use percentage-based width for responsiveness */
+    max-width: 90%; /* Limit to 90% of the viewport width */
+    margin: 0 auto; /* Center the container */
+    padding: 16px;
+  }
+  
+  /* Filter Section */
+  .filter-section {
+    display: flex;
+    gap: 2%; /* Space between filter elements as a percentage */
+    margin-bottom: 20px;
+  }
+  
+  .filter-section select,
+  .filter-section button {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    width: 100%; /* Make the elements flexible for better alignment */
+  }
+  
+  /* Pesanan List */
+  .pesanan-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  /* Card Style */
+  .pesanan-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #ddd;
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    width: 100%; /* Card width is 100% of the container */
+    gap: 5%; /* Space between card sections */
+  }
+  
+  /* Pesanan Details Section */
+  .pesanan-details {
+    flex: 3;
+    color: #333;
+  }
+  
+  .pesanan-details p {
+    margin: 4px 0;
+  }
+  
+  /* Pesanan Action Section */
+  .pesanan-action {
+    flex: 1;
+    text-align: right;
+    color: #333;
+  }
+  
+  .pesanan-action p {
+    margin: 4px 0;
+  }
+  
+  .pesanan-action button {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .pesanan-action button:hover {
+    background-color: #218838;
+  }
+  
+  /* For Desktop-Specific Styling */
+  @media (min-width: 768px) {
+    .container {
+      width: 80%; /* Increase container width on larger screens */
+    }
+  
+    .filter-section {
+      gap: 3%; /* Adjust gap between filter elements for desktop */
+    }
+  
+    .pesanan-card {
+      padding: 24px; /* More padding for desktop cards */
+      gap: 4%; /* Smaller gap for sections within the card */
+    }
+  
+    .pesanan-action button {
+      font-size: 18px; /* Slightly larger buttons */
+      padding: 12px 20px;
+    }
+  }
+  

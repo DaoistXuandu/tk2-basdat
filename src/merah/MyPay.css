@@ -1,0 +1,148 @@
+body {
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .mypay-container {
+    width: 90%;  /* Ubah max-width menjadi width */
+    max-width: 1200px;  /* Perbesar max-width */
+    margin: 40px auto;  /* Tambah margin atas bawah */
+    padding: 0 30px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .balance-card {
+    background: white;
+    border-radius: 12px;  /* Perbesar border radius */
+    padding: 30px;  /* Perbesar padding */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+  }
+  
+  .balance-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+  }
+  
+  .label {
+    color: #666;
+    font-size: 16px;  /* Perbesar font */
+    margin-bottom: 8px;
+  }
+  
+  .value {
+    font-weight: 500;
+    color: #000;
+    margin: 0;
+    font-size: 18px;  /* Perbesar font */
+  }
+  
+  .balance-value {
+    font-size: 32px;  /* Perbesar font */
+    font-weight: bold;
+    color: #000;
+    margin: 0;
+  }
+  
+  .transaction-button {
+    width: 100%;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 16px;  /* Perbesar padding */
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;  /* Perbesar font */
+    transition: background-color 0.2s;
+  }
+  
+  .transaction-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .history-card {
+    background: white;
+    border-radius: 12px;  /* Perbesar border radius */
+    padding: 30px;  /* Perbesar padding */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .history-card h2 {
+    margin-top: 0;
+    margin-bottom: 30px;
+    font-size: 24px;  /* Perbesar font */
+    color: #000;
+    font-weight: bold;
+  }
+  
+  .transaction-list {
+    max-height: 500px;  /* Perbesar max-height */
+    overflow-y: auto;
+  }
+  
+  .transaction-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;  /* Tambah align-items */
+    padding: 20px 0;  /* Perbesar padding */
+    border-bottom: 1px solid #eee;
+  }
+  
+  .transaction-item:last-child {
+    border-bottom: none;
+  }
+  
+  .amount {
+    font-weight: 500;
+    margin-bottom: 8px;
+    font-size: 20px;  /* Perbesar font */
+  }
+  
+  .amount.positive {
+    color: #28a745;
+  }
+  
+  .amount.negative {
+    color: #dc3545;
+  }
+  
+  .category {
+    font-size: 16px;  /* Perbesar font */
+    color: #666;
+    margin: 0;
+  }
+  
+  .date {
+    font-size: 16px;  /* Perbesar font */
+    color: #666;
+    margin: 0;
+  }
+  
+  /* Tambah Media Queries untuk Responsivitas */
+  @media screen and (max-width: 768px) {
+    .mypay-container {
+      width: 95%;
+      padding: 0 15px;
+      margin: 20px auto;
+    }
+  
+    .balance-card,
+    .history-card {
+      padding: 20px;
+    }
+  
+    .balance-value {
+      font-size: 24px;
+    }
+  
+    .amount {
+      font-size: 18px;
+    }
+  
+    .category,
+    .date {
+      font-size: 14px;
+    }
+  }
