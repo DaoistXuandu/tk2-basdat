@@ -12,6 +12,8 @@ import BookingForm from './BagianHijau/BookingForm';
 import SubCategoryDetail from './BagianHijau/SubCategoryDetail';
 import ServiceMarketplace from './BagianHijau/ServiceMarketplace';
 import Homepage from './BagianHijau/Homepage';
+import TransaksiMyPay from './merah/TransaksiMyPay';
+import MyPay from './merah/MyPay';
 
 function App() {
   const role = ["Pekerja", "Pengguna"]
@@ -28,6 +30,17 @@ function App() {
         <Route path="profile" element={<Profile role={status == "Pekerja"} />} />
         <Route path="homepage" element={<Homepage />} />
         <Route path="*" element={<NoPage />} />
+        <Route path="mypay" element={<MyPay />} />
+        <Route
+        path="transaksiMyPayPengguna"
+        element={<TransaksiMyPay status= "Pengguna" role="Pengguna" />}
+      />
+        <Route
+        path="transaksiMyPayPekerja"
+        element={<TransaksiMyPay status= "Pekerja" role="Pekerja" />}
+      />
+
+
       </Routes>
     </BrowserRouter >
   );

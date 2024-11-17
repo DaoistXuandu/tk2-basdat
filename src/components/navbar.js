@@ -1,4 +1,4 @@
-
+import MyPay from "../merah/MyPay";
 
 export default function NavBar({ status, name }) {
     const anonym = ["Login", "Register"];
@@ -7,7 +7,7 @@ export default function NavBar({ status, name }) {
     const info = [status, name]
 
     const user = ["Homepage", "MyPay", "Kelola Pesanan Saya", "Diskon", "Profile", "Logout"];
-    const user_link = ["/homepage", "..", "..", "..", "/profile", "/logout"];
+    const user_link = ["/homepage", "/mypay", "..", "..", "/profile", "/logout"];
 
     const worker = ["Homepage", "Kelola Pekerjaan Saya", "Kelola Status Pekerjaan", "MyPay", "Profile", "Logout"];
     const worker_link = ["/homepage", "..", "..", "..", "/profile", "/logout"];

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import './TransaksiMyPay.css';
-
-const TransaksiMyPay = () => {
+import User from "../components/user";
+import NavBar from "../components/navbar";
+const TransaksiMyPay = ({role}) => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedServicePrice, setSelectedServicePrice] = useState(0);
   
@@ -148,7 +149,10 @@ const TransaksiMyPay = () => {
         >
           <option value="">Pilih Kategori</option>
           <option value="topup">Top Up MyPay</option>
-          <option value="payment">Pembayaran Jasa</option>
+          {/* Conditionally render Pembayaran Jasa if the role is Pengguna */}
+          {role === "Pengguna" && (
+            <option value="payment">Pembayaran Jasa</option>
+          )}
           <option value="transfer">Transfer MyPay</option>
           <option value="withdrawal">Withdrawal</option>
         </select>
