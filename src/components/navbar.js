@@ -7,10 +7,10 @@ export default function NavBar({ status, name }) {
     const info = [status, name]
 
     const user = ["Homepage", "MyPay", "Kelola Pesanan Saya", "Diskon", "Profile", "Logout"];
-    const user_link = ["..", "..", "..", "..", "/profile", "/logout"];
+    const user_link = ["/homepage", "..", "..", "..", "/profile", "/logout"];
 
     const worker = ["Homepage", "Kelola Pekerjaan Saya", "Kelola Status Pekerjaan", "MyPay", "Profile", "Logout"];
-    const worker_link = ["..", "..", "..", "..", "/profile", "/logout"];
+    const worker_link = ["/homepage", "..", "..", "..", "/profile", "/logout"];
 
     function data() {
         if (status == "Pekerja") {
