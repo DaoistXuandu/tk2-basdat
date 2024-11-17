@@ -13,14 +13,14 @@ import SubCategoryDetail from './BagianHijau/SubCategoryDetail';
 import ServiceMarketplace from './BagianHijau/ServiceMarketplace';
 import Homepage from './BagianHijau/Homepage';
 
-
-
 function App() {
-  const status = "Pengguna"
+  const role = ["Pekerja", "Pengguna"]
+  const status = role[1]
+  const name = "Andi"
+
   return (
     <BrowserRouter>
-      < NavBar status={status} name={"Andi"} />
-      {/* < NavBar status={""} name={""} /> */}
+      < NavBar status={status} name={name} />
       <Routes>
         <Route index element={<Home />} />
         <Route path="login" element={< LogIn />} />

@@ -27,7 +27,7 @@ export default function User({ status, text, currentRole }) {
     ]
 
     useEffect(() => {
-        console.log("E", role)
+        console.log("E", role)  
     }, [role])
 
     useEffect(() => {
