@@ -5,6 +5,8 @@ import User from "../components/user";
 
 export default function Register() {
     return (
-        <User text={"Register"} status={"Register"} role={false} />
+        <div className="mt-12">
+            <User text={"Register"} status={"Register"} role={false} />
+        </div>
     )
 }

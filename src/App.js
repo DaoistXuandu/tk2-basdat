@@ -22,7 +22,7 @@ import SubCategoryDetailWorker from './BagianHijau/SubCategoryDetailPekerja';
 
 function App() {
   const role = ["Pekerja", "Pengguna", ""]
-  const status = role[2]
+  const status = role[0]
   const name = "Andi"
 
   return (
