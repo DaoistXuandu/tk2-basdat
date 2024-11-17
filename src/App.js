@@ -9,8 +9,6 @@ import NoPage from './pages/NoPage';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import BookingForm from './BagianHijau/BookingForm';
-import SubCategoryDetail from './BagianHijau/SubCategoryDetail';
-import ServiceMarketplace from './BagianHijau/ServiceMarketplace';
 import Homepage from './BagianHijau/Homepage';
 import TransaksiMyPay from './merah/TransaksiMyPay';
 import MyPay from './merah/MyPay';
