@@ -72,7 +72,7 @@ const ViewPemesananJasa = () => {
                   </button>
                 ) : pesanan.status === "Pesanan Selesai" &&
                   !pesanan.sudahMemberikanTestimoni ? (
-                  <button className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 w-full">
+                  <button onClick={e => window.location = '/testimoni'} className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 w-full">
                     Buat Testimoni
                   </button>
                 ) : null}

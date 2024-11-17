@@ -18,6 +18,7 @@ import DiscountPage from './components/Discounts/DiscountPage';
 import ViewPemesananJasa from './BagianHijau/ViewPemesananJasa';
 import SubCategoryDetailUser from './BagianHijau/SubCategoryDetailPengguna';
 import SubCategoryDetailWorker from './BagianHijau/SubCategoryDetailPekerja';
+import Testimoni from './components/Testimoni/TestimoniComponent';
 
 
 function App() {
@@ -55,8 +56,11 @@ function App() {
 
         <Route path='diskon' element={<DiscountPage />} />
         <Route path='viewPemesananJasa' element={<ViewPemesananJasa />} />
+
         <Route path='pekerjaanSaya' element={<PekerjaanJasa />} />
         <Route path='statusPekerjaan' element={<StatusPekerjaanJasa />} />
+
+        <Route path='testimoni' element={<Testimoni />} />
 
         <Route path="*" element={<NoPage />} />
       </Routes>
