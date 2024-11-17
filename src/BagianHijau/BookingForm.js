@@ -1,79 +1,62 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-// Booking Form Component
-const BookingForm = ({ session, onSubmit, onClose }) => {
-    const [formData, setFormData] = useState({
-        date: new Date().toISOString().split('T')[0],
-        promoCode: '',
-        paymentMethod: 'myPay'
-    });
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onSubmit(formData);
-    };
-
+const BookingForm = () => {
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full">
-                <h2 className="text-2xl font-bold mb-4">Book Service</h2>
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-4">
-                        <label className="block mb-2">Booking Date</label>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-lg shadow-md p-6 w-full max-w-md">
+                <h2 className="text-xl font-semibold text-center mb-6">Pesan Jasa</h2>
+
+                <div className="space-y-4">
+                    {/* Tanggal Pemesanan */}
+                    <div className="flex justify-between items-center">
+                        <label className="text-gray-600">Tanggal Pemesanan:</label>
                         <input
                             type="date"
-                            value={formData.date}
-                            onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                            className="w-full p-2 border rounded"
-                            required
+                            className="border rounded-md px-3 py-2 w-60"
+                            defaultValue="2024-11-17"
                         />
                     </div>
 
-                    <div className="mb-4">
-                        <label className="block mb-2">Promo Code</label>
+                    {/* Diskon */}
+                    <div className="flex justify-between items-center">
+                        <label className="text-gray-600">Diskon:</label>
                         <input
                             type="text"
-                            value={formData.promoCode}
-                            onChange={(e) => setFormData({ ...formData, promoCode: e.target.value })}
-                            className="w-full p-2 border rounded"
-                            placeholder="Enter promo code (optional)"
+                            placeholder="Kode Diskon"
+                            className="border rounded-md px-3 py-2 w-60"
+                            defaultValue="DISC20"
                         />
                     </div>
 
-                    <div className="mb-4">
-                        <label className="block mb-2">Payment Method</label>
-                        <select
-                            value={formData.paymentMethod}
-                            onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })}
-                            className="w-full p-2 border rounded"
-                            required
-                        >
-                            <option value="myPay">MyPay</option>
-                            <option value="bankTransfer">Bank Transfer</option>
+                    {/* Total Pembayaran */}
+                    <div className="flex justify-between items-center">
+                        <label className="text-gray-600">Total Pembayaran:</label>
+                        <input
+                            type="text"
+                            className="border rounded-md px-3 py-2 w-60 bg-gray-50"
+                            value="Rp 500.000,00"
+                            disabled
+                        />
+                    </div>
+
+                    {/* Metode Pembayaran */}
+                    <div className="flex justify-between items-center">
+                        <label className="text-gray-600">Metode Pembayaran:</label>
+                        <select className="border rounded-md px-3 py-2 w-60 bg-white">
+                            <option value="">Metode</option>
+                            <option value="transfer">Transfer Bank</option>
+                            <option value="ewallet">E-Wallet</option>
+                            <option value="cash">Cash</option>
                         </select>
                     </div>
 
-                    <div className="mb-4">
-                        <p className="font-medium">Total Payment</p>
-                        <p className="text-xl">Rp {session.price.toLocaleString()}</p>
-                    </div>
-
-                    <div className="flex gap-4">
-                        <button
-                            type="submit"
-                            className="flex-1 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                        >
-                            Confirm Booking
-                        </button>
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="flex-1 border border-gray-300 px-4 py-2 rounded hover:bg-gray-50"
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </form>
+                    {/* Button */}
+                    <button
+                        className="w-full bg-blue-600 text-white py-2 rounded-md mt-6 hover:bg-blue-700 transition-colors"
+                    >
+                        Pesan Jasa
+                    </button>
+                </div>
             </div>
         </div>
     );
