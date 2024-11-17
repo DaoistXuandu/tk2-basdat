@@ -52,10 +52,10 @@ const subcategoryDataDummy = [{
         { name: "Paket Bersih - Bersih Pengantin Premium", price: "Rp 4.500.000" },
     ],
     workers: [
-        { name: "Sarah Amelia", rating: 4.8 },
-        { name: "Linda Wijaya", rating: 4.9 },
-        { name: "Nina Hartono", rating: 4.7 },
-        { name: "Maria Chen", rating: 4.8 },
+        { name: "Sarah Amelia", rating: 4.8, total: 2, number: "081234567890", date: "2000-07-05", address: "Jl. Teknik Sipil No. 2" },
+        { name: "Linda Wijaya", rating: 4.9, total: 4, number: "081214527870", date: "2000-06-10", address: "Jl. Teknik Nuklir No. 3" },
+        { name: "Nina Hartono", rating: 4.7, total: 1, number: "081224597820", date: "2001-02-12", address: "Jl. Teknik Mastar No. 10" },
+        { name: "Maria Chen", rating: 4.8, total: 8, number: "081234231910", date: "2000-01-02", address: "Jl. Teknik Sipil No. 12" },
     ],
 },
 {
@@ -159,8 +159,9 @@ const SubCategoryDetailUser = () => {
                     <div className="grid grid-cols-4 gap-4">
                         {subcategoryData.workers.map((worker, index) => (
                             <div
+                                onClick={e => window.location = `/profilPekerja/${index}`}
                                 key={index}
-                                className="border rounded-md p-3 text-center space-y-2"
+                                className="cursor-pointer border rounded-md p-3 text-center space-y-2"
                             >
                                 <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto" />
                                 <p className="font-medium">{worker.name}</p>

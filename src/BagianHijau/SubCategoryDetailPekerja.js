@@ -155,8 +155,9 @@ const SubCategoryDetailWorker = () => {
                     <div className="grid grid-cols-4 gap-4">
                         {subcategoryData.workers.map((worker, index) => (
                             <div
+                                onClick={e => window.location = `/profilPekerja/${index}`}
                                 key={index}
-                                className="border rounded-md p-3 text-center space-y-2"
+                                className="cursor-pointer border rounded-md p-3 text-center space-y-2"
                             >
                                 <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto" />
                                 <p className="font-medium">{worker.name}</p>

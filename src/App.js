@@ -19,6 +19,8 @@ import ViewPemesananJasa from './BagianHijau/ViewPemesananJasa';
 import SubCategoryDetailUser from './BagianHijau/SubCategoryDetailPengguna';
 import SubCategoryDetailWorker from './BagianHijau/SubCategoryDetailPekerja';
 import Testimoni from './components/Testimoni/TestimoniComponent';
+import WorkerProfile from './components/profile';
+import FormTestimoni from './components/Testimoni/FormTestimoni';
 
 
 function App() {
@@ -60,7 +62,9 @@ function App() {
         <Route path='pekerjaanSaya' element={<PekerjaanJasa />} />
         <Route path='statusPekerjaan' element={<StatusPekerjaanJasa />} />
 
-        <Route path='testimoni' element={<Testimoni />} />
+        <Route path='testimoni' element={<FormTestimoni />} />
+        <Route path='profilPekerja/:id' element={<WorkerProfile />} />
+
 
         <Route path="*" element={<NoPage />} />
       </Routes>
