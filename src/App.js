@@ -30,7 +30,7 @@ function App() {
         <Route path="login" element={< LogIn />} />
         <Route path="register" element={< Register />} />
         <Route path="profile" element={<Profile role={status == "Pekerja"} />} />
-        <Route path="homepage" element={<Homepage />} />
+        <Route path="homepage" element={<Homepage role={status}/>} />
         <Route path="*" element={<NoPage />} />
         <Route path="mypay" element={<MyPay />} />
         <Route
