@@ -128,7 +128,7 @@ const TransaksiMyPay = ({ role }) => {
   };
 
   return (
-    <div className="transaction-container mt-16">
+    <div className="transaction-container">
       <h2>Form Transaksi</h2>
 
       <div className="user-info">
