@@ -26,14 +26,6 @@ export default function User({ status, text, currentRole }) {
         ["URL Foto", "file"]
     ]
 
-    useEffect(() => {
-        console.log("E", role)  
-    }, [role])
-
-    useEffect(() => {
-        console.log("T", currentRole)
-    }, [currentRole])
-
     function input_data({ type, index }) {
         if (type == "option") {
             return (
