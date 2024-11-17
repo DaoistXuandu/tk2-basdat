@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import './TransaksiMyPay.css';
 import User from "../components/user";
 import NavBar from "../components/navbar";
-const TransaksiMyPay = ({role}) => {
+const TransaksiMyPay = ({ role }) => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedServicePrice, setSelectedServicePrice] = useState(0);
-  
+
   // Dummy data
   const userData = {
     name: "John Doe",
@@ -46,7 +46,7 @@ const TransaksiMyPay = ({role}) => {
   };
 
   const renderFormState = () => {
-    switch(selectedCategory) {
+    switch (selectedCategory) {
       case 'topup':
         return (
           <div className="form-state">
@@ -58,7 +58,7 @@ const TransaksiMyPay = ({role}) => {
             </div>
           </div>
         );
-      
+
       case 'payment':
         return (
           <div className="form-state">
@@ -128,9 +128,9 @@ const TransaksiMyPay = ({role}) => {
   };
 
   return (
-    <div className="transaction-container">
+    <div className="transaction-container mt-16">
       <h2>Form Transaksi</h2>
-      
+
       <div className="user-info">
         <p>Nama User: {userData.name}</p>
         <p>Saldo User: {formatIDR(userData.balance)}</p>
@@ -143,7 +143,7 @@ const TransaksiMyPay = ({role}) => {
 
       <div className="form-group">
         <label>Kategori Transaksi:</label>
-        <select 
+        <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
         >

@@ -14,6 +14,11 @@ import TransaksiMyPay from './merah/TransaksiMyPay';
 import MyPay from './merah/MyPay';
 import PekerjaanJasa from './merah/PekerjaanJasa';
 import StatusPekerjaanJasa from './merah/StatusPekerjaanJasa';
+import DiscountPage from './components/Discounts/DiscountPage';
+import ViewPemesananJasa from './BagianHijau/ViewPemesananJasa';
+import SubCategoryDetailUser from './BagianHijau/SubCategoryDetailPengguna';
+import SubCategoryDetailWorker from './BagianHijau/SubCategoryDetailPekerja';
+
 
 function App() {
   const role = ["Pekerja", "Pengguna"]
@@ -28,21 +33,32 @@ function App() {
         <Route path="login" element={< LogIn />} />
         <Route path="register" element={< Register />} />
         <Route path="profile" element={<Profile role={status == "Pekerja"} />} />
-        <Route path="homepage" element={<Homepage role={status}/>} />
-        <Route path="*" element={<NoPage />} />
+        <Route path="logout" element={<Home />} />
+
+        <Route path="homepage" element={<Homepage role={status} />} />
+        {
+          status == "Pengguna" ?
+            <Route path="homepage/:id" element={<SubCategoryDetailUser />} />
+            :
+            <Route path="homepage/:id" element={<SubCategoryDetailWorker />} />
+        }
+        <Route path="homepage/:id/form" element={<BookingForm />} />
+
         <Route path="mypay" element={<MyPay />} />
-        <Route
-        path="transaksiMyPayPengguna"
-        element={<TransaksiMyPay status= "Pengguna" role="Pengguna" />}
-        />
-        <Route
-        path="transaksiMyPayPekerja"
-        element={<TransaksiMyPay status= "Pekerja" role="Pekerja" />}
-        />
+        <Route path='mypay/transaksi' element={<TransaksiMyPay role={status} />} />
+
+        <Route path="transaksiMyPayPengguna" element={<TransaksiMyPay status="Pengguna" role="Pengguna" />} />
+        <Route path="transaksiMyPayPekerja" element={<TransaksiMyPay status="Pekerja" role="Pekerja" />} />
+
         <Route path="statusPekerjaanJasa" element={<StatusPekerjaanJasa />} />
         <Route path="pekerjaanJasa" element={<PekerjaanJasa />} />
 
+        <Route path='diskon' element={<DiscountPage />} />
+        <Route path='viewPemesananJasa' element={<ViewPemesananJasa />} />
+        <Route path='pekerjaanSaya' element={<PekerjaanJasa />} />
+        <Route path='statusPekerjaan' element={<StatusPekerjaanJasa />} />
 
+        <Route path="*" element={<NoPage />} />
       </Routes>
     </BrowserRouter >
   );

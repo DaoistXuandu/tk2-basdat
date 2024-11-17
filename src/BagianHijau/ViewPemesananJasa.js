@@ -28,7 +28,7 @@ const ViewPemesananJasa = () => {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="max-w-6xl mx-auto mt-16 p-6">
       {/* Filter Section */}
       <div className="flex items-center gap-4 mb-6">
         <select className="border p-2 rounded-md">
@@ -56,26 +56,28 @@ const ViewPemesananJasa = () => {
             className="flex items-center justify-between border p-4 rounded-lg"
           >
             {/* Informasi Pesanan */}
-            <div className="flex-1 grid grid-cols-5 gap-4 items-center">
-              <span>{pesanan.subkategori}</span>
-              <span>{pesanan.sesiLayanan}</span>
-              <span>{pesanan.harga}</span>
-              <span>{pesanan.namaPekerja}</span>
-              <span>{pesanan.status}</span>
-            </div>
+            <div className="flex flex-row  gap-4 items-center w-full">
+              <span className="w-1/6">{pesanan.subkategori}</span>
+              <span className="w-1/6">{pesanan.sesiLayanan}</span>
+              <span className="w-1/6">{pesanan.harga}</span>
+              <span className="w-1/6">{pesanan.namaPekerja}</span>
+              <span className="w-1/6">{pesanan.status}</span>
 
-            {/* Conditional Buttons */}
-            {pesanan.status === "Menunggu Pembayaran" ||
-            pesanan.status === "Mencari Pekerja Terdekat" ? (
-              <button className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
-                Batalkan
-              </button>
-            ) : pesanan.status === "Pesanan Selesai" &&
-              !pesanan.sudahMemberikanTestimoni ? (
-              <button className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
-                Buat Testimoni
-              </button>
-            ) : null}
+              {/* Conditional Buttons */}
+              <div className="w-1/6">
+                {pesanan.status === "Menunggu Pembayaran" ||
+                  pesanan.status === "Mencari Pekerja Terdekat" ? (
+                  <button className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 w-full">
+                    Batalkan
+                  </button>
+                ) : pesanan.status === "Pesanan Selesai" &&
+                  !pesanan.sudahMemberikanTestimoni ? (
+                  <button className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 w-full">
+                    Buat Testimoni
+                  </button>
+                ) : null}
+              </div>
+            </div>
           </div>
         ))}
       </div>

@@ -51,7 +51,7 @@ const MyPay = () => {
             <p className="balance-value">{formatIDR(userData.balance)}</p>
           </div>
         </div>
-        <button className="transaction-button">Lakukan Transaksi</button>
+        <button onClick={e => window.location = "/mypay/transaksi"} className="transaction-button">Lakukan Transaksi</button>
       </div>
 
       {/* Transaction History */}

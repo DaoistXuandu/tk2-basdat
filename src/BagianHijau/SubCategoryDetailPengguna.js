@@ -1,10 +1,86 @@
 import React, { useEffect, useState } from "react";
 import { Star } from "lucide-react";
 import { FaUserCircle, FaStar, FaRegStar } from "react-icons/fa";
+import { useParams } from "react-router-dom";
 
-const SubCategoryDetail = () => {
+const categories = [
+    { id: 1, name: 'Home Cleaning', description: 'Professional home cleaning services' },
+    { id: 2, name: 'Plumbing', description: 'Expert plumbing repair and installation' },
+    { id: 3, name: 'Electrical', description: 'Electrical repair and installation services' },
+];
+
+const subCategories = [
+    {
+        id: 1,
+        categoryId: 1,
+        name: 'Deep Cleaning',
+        description: 'Thorough cleaning of all rooms',
+        sessions: [
+            { id: 1, name: '2 Hours', price: 150000 },
+            { id: 2, name: '4 Hours', price: 280000 },
+        ],
+        workers: [
+            { id: 1, name: 'John Doe', rating: 4.8, completedJobs: 156 },
+            { id: 2, name: 'Jane Smith', rating: 4.9, completedJobs: 243 },
+        ],
+    },
+    {
+        id: 2,
+        categoryId: 1,
+        name: 'Basic Cleaning',
+        description: 'Standard cleaning service',
+        sessions: [
+            { id: 3, name: '2 Hours', price: 100000 },
+            { id: 4, name: '4 Hours', price: 180000 },
+        ],
+        workers: [
+            { id: 3, name: 'Mike Johnson', rating: 4.7, completedJobs: 89 },
+            { id: 4, name: 'Sarah Williams', rating: 4.6, completedJobs: 124 },
+        ],
+    },
+];
+
+
+// Dummy data untuk subkategori
+const subcategoryDataDummy = [{
+    name: "Pembersihan Acara Pernikahan",
+    category: "Deep Cleaning",
+    description:
+        "Layanan pembersihan profesional untuk pengantin dengan pengalaman lebih dari 10 tahun. Menggunakan produk premium dan tahan lama untuk hari spesial Anda.",
+    services: [
+        { name: "Paket Bersih - Bersih Pengantin Basic", price: "Rp 2.500.000" },
+        { name: "Paket Bersih - Bersih Pengantin Premium", price: "Rp 4.500.000" },
+    ],
+    workers: [
+        { name: "Sarah Amelia", rating: 4.8 },
+        { name: "Linda Wijaya", rating: 4.9 },
+        { name: "Nina Hartono", rating: 4.7 },
+        { name: "Maria Chen", rating: 4.8 },
+    ],
+},
+{
+    name: "Pembersihan Makanan",
+    category: "Basic Cleaning",
+    description:
+        "Layanan pembersihan profesional untuk noda makana",
+    services: [
+        { name: "Paket Bersih - Basic", price: "Rp 50.000" },
+        { name: "Paket Bersih - Premium", price: "Rp 100.000" },
+    ],
+    workers: [
+        { name: "Sarah Amelia", rating: 4.8 },
+        { name: "Linda Wijaya", rating: 4.9 },
+        { name: "Nina Hartono", rating: 4.7 },
+        { name: "Maria Chen", rating: 4.8 },
+    ],
+},
+];
+
+
+const SubCategoryDetailUser = () => {
+    const { id } = useParams()
     const [testimonis, setTestimonis] = useState([]);
-
+    const subcategoryData = subcategoryDataDummy[id - 1];
     // Mengambil testimonial dari LocalStorage saat komponen dimount
     useEffect(() => {
         const storedTestimonis = JSON.parse(localStorage.getItem("testimonis"));
@@ -32,26 +108,8 @@ const SubCategoryDetail = () => {
         }
     }, []);
 
-    // Dummy data untuk subkategori
-    const subcategoryData = {
-        name: "Tata Rias Pengantin",
-        category: "Makeup & Kecantikan",
-        description:
-            "Layanan makeup profesional untuk pengantin dengan pengalaman lebih dari 10 tahun. Menggunakan produk premium dan tahan lama untuk hari spesial Anda.",
-        services: [
-            { name: "Paket Makeup Pengantin Basic", price: "Rp 2.500.000" },
-            { name: "Paket Makeup Pengantin Premium", price: "Rp 4.500.000" },
-        ],
-        workers: [
-            { name: "Sarah Amelia", rating: 4.8 },
-            { name: "Linda Wijaya", rating: 4.9 },
-            { name: "Nina Hartono", rating: 4.7 },
-            { name: "Maria Chen", rating: 4.8 },
-        ],
-    };
-
     return (
-        <div className="max-w-4xl mx-auto p-6 space-y-6">
+        <div className="mt-16 max-w-4xl mx-auto p-6 space-y-6">
             <div className="bg-white rounded-lg shadow-md p-6 space-y-6">
                 {/* Header Section */}
                 <div className="grid grid-cols-2 gap-4">
@@ -88,9 +146,9 @@ const SubCategoryDetail = () => {
                                 <span className="font-medium">{service.name}</span>
                                 <span className="ml-4 text-gray-600">{service.price}</span>
                             </div>
-                            <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                            <a href={`${window.location.href}/form`} className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
                                 Pesan
-                            </button>
+                            </a>
                         </div>
                     ))}
                 </div>
@@ -160,4 +218,4 @@ const SubCategoryDetail = () => {
     );
 };
 
-export default SubCategoryDetail;
+export default SubCategoryDetailUser;

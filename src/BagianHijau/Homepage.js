@@ -39,7 +39,7 @@ const subCategories = [
     },
 ];
 
-const Homepage = ({ onSubCategoryClick }) => {
+const Homepage = () => {
     const [selectedCategory, setSelectedCategory] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -49,7 +49,7 @@ const Homepage = ({ onSubCategoryClick }) => {
     );
 
     return (
-        <div className="p-6">
+        <div className="mt-16 p-6">
             <div className="mb-6">
                 <h1 className="text-3xl font-bold mb-4">Service Categories</h1>
                 <div className="flex gap-4 mb-4">
@@ -82,17 +82,17 @@ const Homepage = ({ onSubCategoryClick }) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredSubCategories.map((subCategory) => (
-                    <div
+                    <a
                         key={subCategory.id}
                         className="border rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow"
-                        onClick={() => onSubCategoryClick(subCategory)}
+                        href={`/homepage/${subCategory.id}`}
                     >
                         <h3 className="text-xl font-semibold mb-2">{subCategory.name}</h3>
                         <p className="text-gray-600 mb-2">{subCategory.description}</p>
                         <p className="text-sm text-gray-500">
                             Starting from Rp {Math.min(...subCategory.sessions.map((s) => s.price)).toLocaleString()}
                         </p>
-                    </div>
+                    </a>
                 ))}
             </div>
         </div>

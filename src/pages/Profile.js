@@ -38,10 +38,23 @@ export default function Profile({ role }) {
         "Kategori Pekerjaan"
     ];
 
+    function getData() {
+        if (role == "Pelanggan") {
+            return (
+                <div>snkdskl</div>
+            )
+        }
+        else {
+            return (
+                <div>Pekerja</div>
+            )
+
+        }
+    }
+
     return (
         <div>
-            <NavBar status={"block"} />
-            <div className="h-screen w-full flex justify-center items-center flex flex-row gap-3">
+            <div className="mt-10 h-screen w-full flex justify-center items-center flex flex-row gap-3">
                 <div className="bg-white shadow-lg p-10 border border-1 rounded-lg flex flex-col gap-3">
                     <div className="font-bold text-3xl">Profile</div>
                     <img src={image} className={`w-16 h-16 ${!role && 'hidden'}`} />
