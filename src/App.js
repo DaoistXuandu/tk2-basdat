@@ -22,7 +22,7 @@ import SubCategoryDetailWorker from './BagianHijau/SubCategoryDetailPekerja';
 
 function App() {
   const role = ["Pekerja", "Pengguna", ""]
-  const status = role[0]
+  const status = role[1]
   const name = "Andi"
 
   return (
@@ -32,7 +32,7 @@ function App() {
         <Route index element={<Home />} />
         <Route path="login" element={< LogIn />} />
         <Route path="register" element={< Register />} />
-        <Route path="profile" element={<Profile role={status == "Pekerja"} />} />
+        <Route path="profile" element={<Profile role={status == "Pengguna"} />} />
         <Route path="logout" element={<Home />} />
 
         <Route path="homepage" element={<Homepage role={status} />} />
