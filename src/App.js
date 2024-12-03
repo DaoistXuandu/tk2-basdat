@@ -21,26 +21,31 @@ import SubCategoryDetailWorker from './BagianHijau/SubCategoryDetailPekerja';
 import Testimoni from './components/Testimoni/TestimoniComponent';
 import WorkerProfile from './components/profile';
 import FormTestimoni from './components/Testimoni/FormTestimoni';
-
+import { useEffect, useState } from 'react';
+import { fetchData, getCookie, login } from './controller/kuning';
+import { useCookies } from 'react-cookie'
+import Logout from './components/logout';
 
 function App() {
   const role = ["Pekerja", "Pengguna", ""]
-  const status = role[1]
-  const name = "Andi"
+  const [cookies, setCookie] = useCookies(['userId', 'status', 'name'])
+
+  // setCookie('name', '')
+  // setCookie('status', role[2])
 
   return (
     <BrowserRouter>
-      < NavBar status={status} name={name} />
+      < NavBar status={cookies.status} name={cookies.name} />
       <Routes>
         <Route index element={<Home />} />
         <Route path="login" element={< LogIn />} />
         <Route path="register" element={< Register />} />
-        <Route path="profile" element={<Profile role={status == "Pengguna"} />} />
-        <Route path="logout" element={<Home />} />
+        <Route path="profile" element={<Profile role={cookies.status == "Pengguna"} />} />
+        <Route path="logout" element={<Logout />} />
 
-        <Route path="homepage" element={<Homepage role={status} />} />
+        <Route path="homepage" element={<Homepage role={cookies.status} />} />
         {
-          status == "Pengguna" ?
+          cookies.status == "Pengguna" ?
             <Route path="homepage/:id" element={<SubCategoryDetailUser />} />
             :
             <Route path="homepage/:id" element={<SubCategoryDetailWorker />} />
@@ -48,7 +53,7 @@ function App() {
         <Route path="homepage/:id/form" element={<BookingForm />} />
 
         <Route path="mypay" element={<MyPay />} />
-        <Route path='mypay/transaksi' element={<TransaksiMyPay role={status} />} />
+        <Route path='mypay/transaksi' element={<TransaksiMyPay role={cookies.status} />} />
 
         <Route path="transaksiMyPayPengguna" element={<TransaksiMyPay status="Pengguna" role="Pengguna" />} />
         <Route path="transaksiMyPayPekerja" element={<TransaksiMyPay status="Pekerja" role="Pekerja" />} />

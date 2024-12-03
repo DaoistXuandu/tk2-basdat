@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 
 export default function User({ status, text, currentRole }) {
+    const [cookies, setCookie] = useCookies(['userId', 'status', 'name'])
+
     const [role, setRole] = useState(currentRole)
     const input_element = [
         ["Register Sebagai", "option",

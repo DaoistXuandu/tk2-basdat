@@ -1,4 +1,13 @@
+import { useCookies } from 'react-cookie'
+
 export default function Home() {
+    const [cookies, setCookie] = useCookies(['userId', 'status', 'name'])
+
+    setCookie('status', '')
+    setCookie('name', '')
+    setCookie('userId', '')
+
+
     return (
         <div className="flex h-screen justify-center items-center">
             <div className="flex flex-col justify-center w-fit gap-8 p-16 bg-white shadow-lg border border-1 rounded-xl">
