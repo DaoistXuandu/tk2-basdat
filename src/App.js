@@ -1,7 +1,5 @@
-import logo from './logo.svg';
 import './App.css';
 import NavBar from './components/navbar';
-import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from './pages/Home';
 import LogIn from './pages/Login';
@@ -18,20 +16,14 @@ import DiscountPage from './components/Discounts/DiscountPage';
 import ViewPemesananJasa from './BagianHijau/ViewPemesananJasa';
 import SubCategoryDetailUser from './BagianHijau/SubCategoryDetailPengguna';
 import SubCategoryDetailWorker from './BagianHijau/SubCategoryDetailPekerja';
-import Testimoni from './components/Testimoni/TestimoniComponent';
 import WorkerProfile from './components/profile';
 import FormTestimoni from './components/Testimoni/FormTestimoni';
-import { useEffect, useState } from 'react';
-import { fetchData, getCookie, login } from './controller/kuning';
 import { useCookies } from 'react-cookie'
 import Logout from './components/logout';
 
 function App() {
   const role = ["Pekerja", "Pengguna", ""]
   const [cookies, setCookie] = useCookies(['userId', 'status', 'name'])
-
-  // setCookie('name', '')
-  // setCookie('status', role[2])
 
   return (
     <BrowserRouter>
@@ -40,7 +32,7 @@ function App() {
         <Route index element={<Home />} />
         <Route path="login" element={< LogIn />} />
         <Route path="register" element={< Register />} />
-        <Route path="profile" element={<Profile role={cookies.status == "Pengguna"} />} />
+        <Route path="profile" element={<Profile role={cookies.status == role[0]} />} />
         <Route path="logout" element={<Logout />} />
 
         <Route path="homepage" element={<Homepage role={cookies.status} />} />

@@ -1,33 +1,3 @@
-async function fetchData() {
-    try {
-        const response = await fetch('http://127.0.0.1:8080/users', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
-        }
-
-        const data = await response.json(); // Parse JSON response
-        console.log('Data fetched successfully:', data);
-    } catch (error) {
-        console.error('There was a problem with the fetch operation:', error);
-    }
-}
-
-function getCookie(data) {
-    const datas = document.cookie.split(";")
-    let dict = {}
-    for (let data of datas) {
-        const current = data.trim().split("=")
-        dict[current[0]] = current[1]
-    }
-    return dict[data]
-}
-
 async function login(NoHp, Pwd) {
     try {
         const response = await fetch('http://127.0.0.1:8080/login', {
@@ -54,7 +24,6 @@ async function login(NoHp, Pwd) {
 
 async function register(role, name, sex, number, password, date, address, bank, noRek, npwp, link, rating, amount) {
     try {
-        console.log(role + " " + name + " " + sex + " " + number + " " + password + " " + date + " " + address + " " + bank + " " + noRek + " " + npwp + " " + link + " " + rating + " " + amount)
         const response = await fetch('http://127.0.0.1:8080/register', {
             method: 'POST',
             body: JSON.stringify({
@@ -109,4 +78,27 @@ async function uploadImage(image) {
         console.error('Error:', error);
     }
 }
-export { fetchData, getCookie, login, register, uploadImage }
+
+async function getUser(userId, role) {
+    try {
+        const response = await fetch('http://127.0.0.1:8080/getUser', {
+            method: 'PATCH',
+            body: JSON.stringify({
+                user: userId,
+                role: role
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const data = await response.json()
+        return data
+    }
+    catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+    }
+}
+
+
+export { login, register, uploadImage, getUser }
