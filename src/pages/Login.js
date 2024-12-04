@@ -38,7 +38,6 @@ export default function LogIn() {
         }
     }
 
-
     return (
         <div className="flex h-screen justify-center items-center">
             <form className="flex flex-col justify-center w-fit p-8 gap-12 bg-white shadow-lg border border-1 rounded-xl">
