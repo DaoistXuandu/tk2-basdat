@@ -58,6 +58,48 @@ async function register(role, name, sex, number, password, date, address, bank, 
     }
 }
 
+async function updateUser(id, role, name, sex, number, date, address, bank, noRek, npwp, link) {
+    try {
+        let updateDate = date + "T00:00:00Z"
+        let cur_number = number + (number.length > 2 && number[number.length - 2] != '.' ? '.0' : '')
+
+        if (cur_number[0] == '0') {
+            cur_number = cur_number.substring(1, cur_number.length)
+        }
+
+        const response = await fetch('http://127.0.0.1:8080/updateUser', {
+            method: 'PATCH',
+            body: JSON.stringify({
+                user: id,
+                role: role,
+                name: name,
+                sex: sex,
+                number: cur_number,
+                date: updateDate,
+                address: address,
+                bank: bank,
+                noRek: noRek,
+                npwp: npwp,
+                link: link
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+
+        const data = await response.json(); // Parse JSON response
+        return data;
+    }
+    catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+    }
+}
+
+
 async function uploadImage(image) {
     const formData = new FormData();
     formData.append('image', image);
@@ -101,4 +143,4 @@ async function getUser(userId, role) {
 }
 
 
-export { login, register, uploadImage, getUser }
+export { login, register, uploadImage, getUser, updateUser }

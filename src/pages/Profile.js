@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useCookies } from 'react-cookie'
-import { getUser } from "../controller/kuning";
+import { getUser, updateUser, uploadImage } from "../controller/kuning";
 
 export default function Profile({ role }) {
     const [cookies, setCookie] = useCookies(['userId', 'status', 'name'])
@@ -8,7 +8,6 @@ export default function Profile({ role }) {
     const [update, setUpdate] = useState(false);
 
     const [name, setName] = useState("")
-    const [password, setPassword] = useState("")
     const [sex, setSex] = useState("")
     const [number, setNumber] = useState("")
     const [date, setDate] = useState()
@@ -40,33 +39,46 @@ export default function Profile({ role }) {
     ];
 
     const input_element = [
-        ["Nama", "text", name],
-        ["Password", "password", password],
-        ["Jenis Kelamin", "radio", ["L", "P"], sex],
-        ["No HP", "number", number],
-        ["Tanggal Lahir", "date", date],
-        ["Alamat", "text", address],
+        ["Nama", "text", setName, name],
+        ["Jenis Kelamin", "radio", ["L", "P"], setSex, sex],
+        ["No HP", "number", setNumber, number],
+        ["Tanggal Lahir", "date", setDate, date],
+        ["Alamat", "text", setAddress, address],
         ["Nama Bank", "option",
             [
                 "GoPay",
                 "OVO",
                 "Virtual Account BCA",
                 "Virtual Account BNI",
-                "Virtual Account Mandiri"], bank],
-        ["No Rekening", "number", rek],
-        ["NPWP", "text", npwp],
+                "Virtual Account Mandiri"], setBank, bank],
+        ["No Rekening", "number", setRek, rek],
+        ["NPWP", "text", setNpwp, npwp],
         ["URL Foto", "file"]
     ]
+
+    async function handleUrl() {
+        console.log("fxghjkl")
+        var input = document.getElementById("file");
+        var fReader = new FileReader();
+        fReader.readAsDataURL(input.files[0]);
+        fReader.onloadend = async function (event) {
+            var data = event.target.result.split(",")
+            const value = await uploadImage(data[data.length - 1])
+            let current_link = value.data.display_url
+            console.log(current_link)
+            setLink(current_link)
+        }
+    }
 
     function input_data({ type, index }) {
         if (type == "option") {
             return (
-                <div className={`flex flex-col`}>
+                <div className={`flex flex-col ${!role && 'hidden'}`}>
                     <label className="">{input_element[index][0]}:</label>
                     <select onChange={e => setBank(e.target.value)} className="border border-1 w-full rounded-lg p-1 text-sm">
                         {
                             input_element[index][2].map((item) => (
-                                <option name={item} key={item}>
+                                <option name={item} key={item} selected={item == bank}>
                                     {item}
                                 </option>
                             ))
@@ -83,7 +95,8 @@ export default function Profile({ role }) {
                         {
                             input_element[index][2].map(item => (
                                 <div className="flex flex-row gap-2">
-                                    <input type="radio" id={`radio-${item}`} name={'sex'} />
+                                    <input onClick={e => input_element[index][input_element[index].length - 2](e.target.value)}
+                                        type="radio" id={`radio-${item}`} name={'sex'} checked={sex == item} value={item} />
                                     <label>{item}</label>
                                 </div>
                             ))
@@ -94,20 +107,24 @@ export default function Profile({ role }) {
         }
         else {
             return (
-                <div className={`w-full flex items-center ${(index > 6 && !role) || (index == 2 || index == 0) ? 'hidden' : ''}`}>
+                <div className={`w-full flex items-center ${(index > 4 && !role) ? 'hidden' : ''}`}>
                     <label className="w-1/3">{input_element[index][0]}:</label>
-                    <input className="w-2/3 border border-1 border-gray-200 p-1 pl-3 pr-3 rounded-lg" type={input_element[index][1]} name={input_element[index][0]} />
+                    <input className="w-2/3 border border-1 border-gray-200 p-1 pl-3 pr-3 rounded-lg"
+                        type={input_element[index][1]}
+                        name={input_element[index][0]}
+                        id={input_element[index][1]}
+                        onChange={e => (index == input_element.length - 1 ? handleUrl() : input_element[index][input_element[index].length - 2](e.target.value))}
+                        value={index == input_element.length - 1 ? '' : input_element[index][input_element[index].length - 1]} />
                 </div>
             )
         }
     }
 
     async function getProfile() {
-        const data = await getUser(cookies.userId, cookies.role)
+        const data = await getUser(cookies.userId, cookies.status == "Pengguna" ? 0 : 1)
         setName(data.name)
-        setPassword(data.password)
         setSex(data.sex)
-        setNumber(data.number)
+        setNumber('0' + data.number.substr(0, data.number.length - 2))
         setDate(data.date.split("T")[0])
         setAddress(data.address)
         setBank(data.bank)
@@ -120,6 +137,32 @@ export default function Profile({ role }) {
         setAmount(data.amount)
         setCategory(["Cuci Apartement", "Cuci Sepatu"])
     }
+
+    async function handleUpdate() {
+        const role = (cookies.status == "Pekerja" ? 1 : 0)
+        const data = await updateUser(
+            cookies.userId,
+            role,
+            name,
+            sex,
+            number,
+            date,
+            address,
+            bank,
+            rek,
+            npwp,
+            link
+        )
+
+        if (data.status) {
+            alert("User berhasil di update")
+            setUpdate(update != true)
+        }
+        else {
+            alert(data.message)
+        }
+    }
+
 
     useEffect(() => {
         getProfile()
@@ -174,7 +217,7 @@ export default function Profile({ role }) {
                                     ))
                                 }
                             </div>
-                            <button className="hover:scale-95 rounded-lg bg-green-600 p-2 font-bold text-white text-xl">Update Profil</button>
+                            <button onClick={handleUpdate} className="hover:scale-95 rounded-lg bg-green-600 p-2 font-bold text-white text-xl">Update Profil</button>
                         </div>
                     </div>
                 </div>

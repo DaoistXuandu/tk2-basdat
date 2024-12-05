@@ -70,6 +70,11 @@ export default function Register() {
             return
         }
 
+        if (number[0] != '0') {
+            alert("Nomor telepon harus valid")
+            return;
+        }
+
         let cur_number = number + (number.length > 2 && number[number.length - 2] != '.' ? '.0' : '')
 
         if (cur_number[0] == '0') {
@@ -91,7 +96,6 @@ export default function Register() {
             0.0,
             0);
 
-        console.log(data)
         if (data.status) {
             alert("User berhasil dibuat")
             window.location = "/login"
