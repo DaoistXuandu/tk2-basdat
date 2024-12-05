@@ -6,6 +6,9 @@ import { register, uploadImage } from "../controller/kuning";
 export default function Register() {
     const [cookies, setCookie] = useCookies(['userId', 'status', 'name'])
     const [role, setRole] = useState(cookies.status == "Pekerja" ? 1 : 0)
+    const [wait, setWait] = useState(false)
+    const [message, setMessage] = useState(["Awal", "green"])
+
 
     const [name, setName] = useState("")
     const [password, setPassword] = useState("")
@@ -52,10 +55,16 @@ export default function Register() {
         fReader.readAsDataURL(input.files[0]);
         fReader.onloadend = async function (event) {
             var data = event.target.result.split(",")
+            setWait(true)
+            let pesan = ["Gambar sedang di unggah mohon menunggu", 'green']
+            setMessage(pesan)
             const value = await uploadImage(data[data.length - 1])
             let current_link = value.data.display_url
             console.log(current_link)
             setLink(current_link)
+            pesan = ["Gambar telah berhasil terunggah", 'green']
+            setMessage(pesan)
+            setWait(false)
         }
     }
 
@@ -160,8 +169,12 @@ export default function Register() {
     }
 
     return (
-        <div className="">
+        <div className="relative">
             <NavBar status={"block"} />
+            <div className={`fixed ${wait ? '' : 'hidden'} bottom-20 left-20 bg-${message[1]}-600 z-200 p-3 pl-6 pr-6 text-left rounded-xl shadow-lg text-white `}>
+                <h1 className="text-2xl font-bold">Pesan:</h1>
+                {message[0]}
+            </div>
             <div className="h-screen flex justify-center items-center">
                 <div className="w-fit p-8 h-fit bg-white shadow-lg border border-1 rounded-lg flex flex-col gap-8">
                     <h1 className="font-bold text-3xl">Register</h1>
@@ -176,13 +189,12 @@ export default function Register() {
                             ))
                         }
                     </div>
-                    <button onClick={handleSubmit} className="hover:scale-95 rounded-lg bg-green-600 p-2 font-bold text-white text-xl">Register</button>
+                    <button onClick={handleSubmit} disabled={wait} className={`hover:scale-95 rounded-lg p-2 font-bold text-white text-x ${wait ? 'bg-gray-200' : 'bg-green-600'}`}>Register</button>
                 </div>
             </div>
             <p>
                 {link}
             </p>
-            <img src={link} alt="sdfghjkl" />
         </div>
     )
 }
