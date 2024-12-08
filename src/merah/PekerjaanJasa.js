@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./PekerjaanJasa.css";
-import { getJobForPekerja, getKategoriAndSub } from "../controller/merah";
+import { getJobForPekerja, getKategoriAndSub, updateJobForPekerja } from "../controller/merah";
 import { useCookies } from 'react-cookie'
 
 const PekerjaanJasa = () => {
@@ -11,58 +11,6 @@ const PekerjaanJasa = () => {
   const [pesananList, setPesananList] = useState([]);
   const [kategoriData, setKategoriData] = useState([])
   const [allPesanan, setAllPesanan] = useState([])
-  // const [allPesanan, setAllPesanan] = useState([
-  //   {
-  //     id: 1,
-  //     kategori: "Home Cleaning",
-  //     subkategori: "Daily Cleaning",
-  //     namaPelanggan: "John Doe",
-  //     tanggalPemesanan: "2024-03-20",
-  //     tanggalPekerjaan: "2024-03-22",
-  //     totalBiaya: 150000,
-  //     status: "Mencari Pekerja Terdekat",
-  //   },
-  //   {
-  //     id: 2,
-  //     kategori: "Massage",
-  //     subkategori: "Pijat Tradisional",
-  //     namaPelanggan: "Asep",
-  //     tanggalPemesanan: "2024-04-10",
-  //     tanggalPekerjaan: "2024-05-02",
-  //     totalBiaya: 200000,
-  //     status: "Mencari Pekerja Terdekat",
-  //   },
-  //   {
-  //     id: 3,
-  //     kategori: "Massage",
-  //     subkategori: "Refleksi",
-  //     namaPelanggan: "Budi",
-  //     tanggalPemesanan: "2024-10-10",
-  //     tanggalPekerjaan: "2024-05-12",
-  //     totalBiaya: 320000,
-  //     status: "Mencari Pekerja Terdekat",
-  //   },
-  //   {
-  //     id: 4,
-  //     kategori: "Home Cleaning",
-  //     subkategori: "Setrika",
-  //     namaPelanggan: "Agus cuguy",
-  //     tanggalPemesanan: "2024-11-10",
-  //     tanggalPekerjaan: "2024-07-22",
-  //     totalBiaya: 250000,
-  //     status: "Mencari Pekerja Terdekat",
-  //   },
-  //   {
-  //     id: 5,
-  //     kategori: "Home Cleaning",
-  //     subkategori: "Pembersihan Dapur",
-  //     namaPelanggan: "Aguss guss",
-  //     tanggalPemesanan: "2024-11-10",
-  //     tanggalPekerjaan: "2024-07-22",
-  //     totalBiaya: 250000,
-  //     status: "Pesanan Selesai",
-  //   },
-  // ]);
 
   async function getInitialValue() {
     let data = await getKategoriAndSub(cookies.userId);
@@ -144,6 +92,11 @@ const PekerjaanJasa = () => {
     setPesananList(filteredPesanan);
   };
 
+  async function updateJob(pesananId) {
+    const data = await updateJobForPekerja(cookies.userId, pesananId)
+    alert(data.message)
+  }
+
   const handleKerjakanPesanan = (pesananId) => {
     setAllPesanan((prevList) =>
       prevList.map((pesanan) => {
@@ -161,6 +114,8 @@ const PekerjaanJasa = () => {
     setPesananList((prevList) =>
       prevList.filter((pesanan) => pesanan.id !== pesananId)
     );
+
+    updateJob(pesananId)
   };
 
   const formatCurrency = (amount) => {

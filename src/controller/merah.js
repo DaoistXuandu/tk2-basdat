@@ -258,11 +258,87 @@ async function getJobForPekerja(id) {
     }
 }
 
+async function updateJobForPekerja(id, trid) {
+    try {
+        const response = await fetch('http://127.0.0.1:8080/jobs/get-job', {
+            method: 'PATCH',
+            body: JSON.stringify({
+                user_id: id,
+                transaksi_pemesanan_jasa_id: trid
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Error ${response.status}: ${errorText}`);
+        }
+
+        const data = await response.json();
+        return data; // Success message from the API
+    } catch (error) {
+        console.error('Transaction failed:', error.message);
+        throw error; // Propagate error to the caller
+    }
+}
+
+async function getCurrentJob(id) {
+    try {
+        const response = await fetch('http://127.0.0.1:8080/jobs/job-pekerja-id', {
+            method: 'PATCH',
+            body: JSON.stringify({
+                user_id: id,
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Error ${response.status}: ${errorText}`);
+        }
+
+        const data = await response.json();
+        return data; // Success message from the API
+    } catch (error) {
+        console.error('Transaction failed:', error.message);
+        throw error; // Propagate error to the caller
+    }
+}
+
+async function updateCurrentJob(id) {
+    try {
+        const response = await fetch('http://127.0.0.1:8080/jobs/job-pekerja-update', {
+            method: 'PATCH',
+            body: JSON.stringify({
+                transaksi_pemesanan_jasa_id: id,
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Error ${response.status}: ${errorText}`);
+        }
+
+        const data = await response.json();
+        return data; // Success message from the API
+    } catch (error) {
+        console.error('Transaction failed:', error.message);
+        throw error; // Propagate error to the caller
+    }
+}
+
 
 
 export {
     getMyPayBalance, getMyPayHistory, performTransaction, topUpMyPayBalance, getCategoryIdByName,
     getPesananJasa, getStatusIdByName, processPayment,
 
-    getJobForPekerja, getKategoriAndSub
+    getJobForPekerja, getKategoriAndSub, updateJobForPekerja, getCurrentJob, updateCurrentJob
 };

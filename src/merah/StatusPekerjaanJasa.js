@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
 import "./StatusPekerjaanJasa.css";
+import { getCurrentJob, updateCurrentJob } from "../controller/merah";
+import { useCookies } from 'react-cookie'
 
 const StatusPekerjaanJasa = () => {
+  const [cookies] = useCookies(['userId', 'status', 'nama']);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [pesananList, setPesananList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredPesanan, setFilteredPesanan] = useState([]);
+  const [dummyPesanan, setDummyPesan] = useState([])
 
   // Define status flow as a constant
   const STATUS_FLOW = {
@@ -23,63 +27,51 @@ const StatusPekerjaanJasa = () => {
     }
   };
 
+
   const STATUS_OPTIONS = [
     "Menunggu Pekerja Berangkat",
     "Pekerja Tiba Di Lokasi",
     "Pelayanan Jasa Sedang Dilakukan",
     "Pesanan Selesai",
-    "Pesanan Dibatalkan"
-  ];
+    "Pesanan Dibatal"
+  ]
 
-  const dummyPesanan = [
-    {
-      id: 1,
-      kategori: "Home Cleaning",
-      subkategori: "Daily Cleaning",
-      namaPelanggan: "John Doe",
-      tanggalPemesanan: "2024-03-20",
-      tanggalPekerjaan: "2024-03-22",
-      totalBiaya: 150000,
-      status: "Menunggu Pekerja Berangkat",
-    },
-    {
-      id: 2,
-      kategori: "Massage",
-      subkategori: "Pijat Tradisional",
-      namaPelanggan: "Asep",
-      tanggalPemesanan: "2024-04-10",
-      tanggalPekerjaan: "2024-05-02",
-      totalBiaya: 200000,
-      status: "Pekerja Tiba Di Lokasi",
-    },
-    {
-      id: 3,
-      kategori: "Massage",
-      subkategori: "Refleksi",
-      namaPelanggan: "Budi",
-      tanggalPemesanan: "2024-10-10",
-      tanggalPekerjaan: "2024-05-12",
-      totalBiaya: 320000,
-      status: "Pelayanan Jasa Sedang Dilakukan",
-    },
-    {
-      id: 4,
-      kategori: "Home Cleaning",
-      subkategori: "Setrika",
-      namaPelanggan: "Agus cuguy",
-      tanggalPemesanan: "2024-11-10",
-      tanggalPekerjaan: "2024-07-22",
-      totalBiaya: 250000,
-      status: "Pesanan Selesai",
-    },
-  ];
+  async function getData() {
+    const data = await getCurrentJob(cookies.userId)
+    if (data.status) {
+      let current_value = []
+      data.pekerjaan.map(item => {
+        current_value.push({
+          id: item.id,
+          kategori: item.kategori,
+          subkategori: item.subkategori,
+          namaPelanggan: item.nama,
+          tanggalPemesanan: item.tanggal,
+          totalBiaya: item.total,
+          sesi: item.sesi,
+          status: STATUS_OPTIONS[item.status - 3]
+        })
+      })
+      setDummyPesan(current_value)
+    }
+  }
+
+  useEffect(() => {
+    getData()
+  }, [])
 
   useEffect(() => {
     setPesananList(dummyPesanan);
     setFilteredPesanan(dummyPesanan);
-  }, []);
+  }, [dummyPesanan]);
+
+  async function updateJob(id) {
+    const data = await updateCurrentJob(id)
+    alert(data.message)
+  }
 
   const handleStatusChange = (pesananId, newStatus) => {
+    updateJob(pesananId)
     const updatedList = pesananList.map((pesanan) => {
       if (pesanan.id === pesananId) {
         return {
@@ -89,9 +81,9 @@ const StatusPekerjaanJasa = () => {
       }
       return pesanan;
     });
-    
+
     setPesananList(updatedList);
-    
+
     // Update filtered list immediately if no filters are active
     if (!selectedStatus && !searchQuery) {
       setFilteredPesanan(updatedList);
@@ -104,9 +96,9 @@ const StatusPekerjaanJasa = () => {
   const handleSearch = (currentList = pesananList) => {
     const filtered = currentList.filter((pesanan) => {
       const statusMatch = !selectedStatus || pesanan.status === selectedStatus;
-      const queryMatch = !searchQuery || 
+      const queryMatch = !searchQuery ||
         pesanan.subkategori.toLowerCase().includes(searchQuery.toLowerCase());
-      
+
       return statusMatch && queryMatch;
     });
 
@@ -120,20 +112,21 @@ const StatusPekerjaanJasa = () => {
     }).format(amount);
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("id-ID", {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
+  // const formatDate = (dateString) => {
+  //   return new Date(dateString).toLocaleDateString("id-ID", {
+  //     year: 'numeric',
+  //     month: 'long',
+  //     day: 'numeric'
+  //   });
+  // };
+
 
   const renderStatusButton = (pesanan) => {
     const statusConfig = STATUS_FLOW[pesanan.status];
     if (!statusConfig) return null;
 
     return (
-      <button 
+      <button
         onClick={() => handleStatusChange(pesanan.id, statusConfig.next)}
         className="status-button"
       >
@@ -172,25 +165,35 @@ const StatusPekerjaanJasa = () => {
       </div>
 
       <div className="pesanan-list">
-        {filteredPesanan.map((pesanan) => (
+        {pesananList.map((pesanan) => (
           <div key={pesanan.id} className="pesanan-card">
             <div className="pesanan-details">
-              <p className="pesanan-header">
-                <strong>{pesanan.subkategori}</strong> | {pesanan.namaPelanggan}
+              <p>
+                <strong>{pesanan.subkategori}</strong> |{" "}
+                {pesanan.namaPelanggan}
               </p>
-              <p>Tgl Pemesanan: {formatDate(pesanan.tanggalPemesanan)}</p>
-              <p>Tgl Pekerjaan: {formatDate(pesanan.tanggalPekerjaan)}</p>
-              <p className="pesanan-status">Status: {pesanan.status}</p>
+              <p>
+                Tgl Pemesanan:{" "}
+                {new Date(pesanan.tanggalPemesanan).toLocaleDateString("id-ID")}
+              </p>
+              <p>
+                Sesi:{" "}
+                {pesanan.sesi}
+              </p>
+              <p>
+                Status Pesanan:{" "}
+                {pesanan.status}
+              </p>
+
             </div>
             <div className="pesanan-action">
-              <p className="pesanan-total">
-                Total: {formatCurrency(pesanan.totalBiaya)}
-              </p>
+              <p>Total: {formatCurrency(pesanan.totalBiaya)}</p>
               {renderStatusButton(pesanan)}
             </div>
           </div>
         ))}
       </div>
+
     </div>
   );
 };
