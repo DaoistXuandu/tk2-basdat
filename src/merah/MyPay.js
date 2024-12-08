@@ -1,33 +1,48 @@
 import React from 'react';
-import './MyPay.css';  // akan dibuat setelah ini
+import { useEffect, useState } from "react";
+import './MyPay.css'; 
+import { useCookies } from 'react-cookie'
+import { getMyPayBalance, getMyPayHistory } from "../controller/merah";  
 
-const MyPay = () => {
-  // Dummy data
-  const userData = {
-    phoneNumber: "081234567890",
-    balance: 1500000
-  };
 
-  const transactionHistory = [
-    {
-      id: 1,
-      amount: 50000,
-      date: "2024-11-17",
-      category: "Top Up"
-    },
-    {
-      id: 2,
-      amount: -25000,
-      date: "2024-11-16",
-      category: "Pembayaran"
-    },
-    {
-      id: 3,
-      amount: -15000,
-      date: "2024-11-15",
-      category: "Transfer"
+export default function MyPay() {
+  const [cookies] = useCookies(['userId', 'status', 'name']);
+  const [userData, setUserData] = useState({
+    phoneNumber: '',
+    balance: 0,
+  });
+  const [transactionHistory, setTransactionHistory] = useState([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      try{
+        const userId = cookies.userId;
+        
+        // Fetch MyPay balance
+        const balanceData = await getMyPayBalance(userId, cookies.status == "Pengguna" ? 0 : 1);
+        if (balanceData) {
+          setUserData({
+            phoneNumber: balanceData.no_hp,
+            balance: balanceData.balance,
+          });
+        }
+
+        // Fetch MyPay transaction history
+        const historyData = await getMyPayHistory(userId, cookies.status == "Pengguna" ? 0 : 1);
+        if (historyData && historyData.History) { 
+          setTransactionHistory(historyData.History); // Access the History property
+        } else {
+          setTransactionHistory([]); // Fallback to an empty array
+        }
+      }
+      catch (error) {
+        console.error('Error fetching data:', error.message);
+        setErrorMessage(error.message); // Set an error message to display
+      }
     }
-  ];
+
+    fetchData();
+  }, [cookies.userId]);
 
   // Format currency to IDR
   const formatIDR = (amount) => {
@@ -51,34 +66,38 @@ const MyPay = () => {
             <p className="balance-value">{formatIDR(userData.balance)}</p>
           </div>
         </div>
-        <button onClick={e => window.location = "/mypay/transaksi"} className="transaction-button">Lakukan Transaksi</button>
+        <button onClick={() => window.location = "/mypay/transaksi"} className="transaction-button">
+          Lakukan Transaksi
+        </button>
       </div>
 
       {/* Transaction History */}
       <div className="history-card">
         <h2>Riwayat Transaksi</h2>
         <div className="transaction-list">
-          {transactionHistory.map((transaction) => (
-            <div key={transaction.id} className="transaction-item">
-              <div>
-                <p className={`amount ${transaction.amount > 0 ? 'positive' : 'negative'}`}>
-                  {formatIDR(transaction.amount)}
+          {transactionHistory.length > 0 ? (
+            transactionHistory.map((transaction) => (
+              <div key={transaction.ID} className="transaction-item">
+                <div>
+                  <p className={`amount ${transaction.Nominal > 0 ? 'positive' : 'negative'}`}>
+                    {formatIDR(transaction.Nominal)}
+                  </p>
+                  <p className="category">{transaction.Kategori}</p>
+                </div>
+                <p className="date">
+                  {new Date(transaction.Tgl).toLocaleDateString('id-ID', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
                 </p>
-                <p className="category">{transaction.category}</p>
               </div>
-              <p className="date">
-                {new Date(transaction.date).toLocaleDateString('id-ID', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}
-              </p>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p>Tidak ada histori transaksi</p>
+          )}
         </div>
       </div>
     </div>
   );
-};
-
-export default MyPay;
+}
