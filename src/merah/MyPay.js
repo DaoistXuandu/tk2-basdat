@@ -23,7 +23,7 @@ export default function MyPay() {
         const balanceData = await getMyPayBalance(userId, cookies.status == "Pengguna" ? 0 : 1);
         if (balanceData) {
           setUserData({
-            phoneNumber: balanceData.no_hp,
+            phoneNumber: '0' + balanceData.noHp.substring(0, balanceData.noHp.length - 2),
             balance: balanceData.balance,
           });
         }

@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import './TransaksiMyPay.css';
-import User from "../components/user";
-import NavBar from "../components/navbar";
 import { useEffect } from "react";
 import { useCookies } from 'react-cookie'
-import { topUpMyPayBalance, getCategoryIdByName, getPesananJasa, getMyPayBalance, processPayment } from "../controller/merah";
+import { topUpMyPayBalance, getCategoryIdByName, getPesananJasa, getMyPayBalance, processPayment, transferToAnotherUser, withdrawUserMoney } from "../controller/merah";
+import { WatchFileKind } from 'typescript';
 
 export default function TransaksiMyPay() {
-  const [cookies] = useCookies(['userId', 'status', 'nama']);
+  const [cookies] = useCookies(['userId', 'status', 'name']);
   const [userData, setUserData] = useState({
     name: '',
     balance: 0,
@@ -20,7 +19,9 @@ export default function TransaksiMyPay() {
   const [date, setDate] = useState("");
   const [services, setServices] = useState([]); // Untuk menyimpan pesanan jasa
   const [selectedServiceId, setSelectedServiceId] = useState(null); // Untuk menyimpan ID jasa yang dipilih
-
+  const [tfAmount, setTfAmount] = useState(0)
+  const [tfHp, setTfHp] = useState(0)
+  const [withdrawal, setWithdrawal] = useState(0)
 
   // Function to handle top-up input changes
   const handleAmountChange = (e) => {
@@ -51,29 +52,30 @@ export default function TransaksiMyPay() {
     setSelectedServicePrice(selectedService ? selectedService.totalPrice : 0);
   };
 
+  async function fetchData() {
+    try {
+      const userId = cookies.userId;
+      const balanceData = await getMyPayBalance(userId, cookies.status === 'Pengguna' ? 0 : 1);
+      if (balanceData) {
+        setUserData({
+          name: cookies.name || '',
+          balance: balanceData.balance,
+        });
+      }
+
+      // Ambil daftar pesanan jasa untuk pengguna
+      const ordersData = await getPesananJasa(userId);
+      if (ordersData && ordersData.services) {
+        setServices(ordersData.services); // Menyimpan data layanan yang dipesan
+      }
+
+    } catch (error) {
+      console.error('Error fetching balance:', error.message);
+    }
+  }
+
   // Fetch user balance on mount
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const userId = cookies.userId;
-        const balanceData = await getMyPayBalance(userId, cookies.status === 'Pengguna' ? 0 : 1);
-        if (balanceData) {
-          setUserData({
-            name: cookies.nama || '',
-            balance: balanceData.balance,
-          });
-        }
-
-        // Ambil daftar pesanan jasa untuk pengguna
-        const ordersData = await getPesananJasa(userId);
-        if (ordersData && ordersData.services) {
-          setServices(ordersData.services); // Menyimpan data layanan yang dipesan
-        }
-
-      } catch (error) {
-        console.error('Error fetching balance:', error.message);
-      }
-    }
     fetchData();
     const today = new Date().toISOString().split("T")[0];
     setDate(today);
@@ -158,6 +160,56 @@ export default function TransaksiMyPay() {
     }
   };
 
+  async function handleTransfer(e) {
+    e.preventDefault()
+
+    if (tfAmount == 0 || tfHp <= 0) {
+      alert("Nominal dan No Hp tidak boleh kosong dan harus merupakan bilangan positif")
+      return
+    }
+
+    let hp = tfHp.toString()
+    let amount = tfAmount
+    hp = (hp[0] == '0' ? hp.substring(1, hp.length) : hp)
+    if (hp.length > 2) {
+      hp = (hp[hp.length - 2] == '.' ? hp : hp + '.0')
+    }
+
+    try {
+      amount = parseFloat(tfAmount)
+    }
+    catch (err) {
+      alert("Nominal harus merupakan bilangan positif")
+      return
+    }
+
+    const data = await transferToAnotherUser(cookies.userId, amount, hp)
+    alert(data.message)
+    fetchData()
+  }
+
+  async function handleWithdrawal(e) {
+    e.preventDefault()
+
+    if (withdrawal <= 0) {
+      alert("Nominal harus lebih dari 0")
+      return
+    }
+
+    let amount = withdrawal
+    try {
+      amount = parseFloat(amount)
+    }
+    catch (err) {
+      alert("Nonimal harusliah bilangan positif");
+      return;
+    }
+
+    const data = await withdrawUserMoney(cookies.userId, amount)
+    alert(data.message)
+    fetchData()
+  }
+
 
   const renderFormState = () => {
     switch (selectedCategory) {
@@ -213,23 +265,23 @@ export default function TransaksiMyPay() {
 
       case 'transfer':
         return (
-          <div className="form-state">
+          <form className="form-state">
             <h3>Transfer MyPay</h3>
             <div className="form-group">
               <label>No. HP:</label>
-              <input type="text" placeholder="Masukkan nomor HP tujuan" />
+              <input value={tfHp} onChange={e => setTfHp(e.target.value)} type="number" placeholder="Masukkan nomor HP tujuan" />
             </div>
             <div className="form-group">
               <label>Nominal:</label>
-              <input type="number" placeholder="Masukkan nominal transfer" />
-              <button className="submit-button">Bayar</button>
+              <input value={tfAmount} onChange={e => setTfAmount(e.target.value)} type="number" placeholder="Masukkan nominal transfer" />
+              <button className="submit-button" onClick={e => handleTransfer(e)}>Bayar</button>
             </div>
-          </div>
+          </form>
         );
 
       case 'withdrawal':
         return (
-          <div className="form-state">
+          <form className="form-state">
             <h3>Withdrawal</h3>
             <div className="form-group">
               <label>Nama Bank:</label>
@@ -246,10 +298,10 @@ export default function TransaksiMyPay() {
             </div>
             <div className="form-group">
               <label>Nominal:</label>
-              <input type="number" placeholder="Masukkan nominal withdrawal" />
-              <button className="submit-button">Bayar</button>
+              <input type="number" placeholder="Masukkan nominal withdrawal" value={withdrawal} onChange={e => setWithdrawal(e.target.value)} />
+              <button className="submit-button" onClick={e => handleWithdrawal(e)}>Bayar</button>
             </div>
-          </div>
+          </form>
         );
 
       default:

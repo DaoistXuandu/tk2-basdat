@@ -1,5 +1,4 @@
 // Controller for MyPay API calls
-
 // Fetching MyPay balance
 async function getMyPayBalance(userId, role) {
     try {
@@ -185,28 +184,74 @@ async function processPayment(userId, serviceId) {
 }
 
 // Perform a transaction (topup, payment, transfer, or withdrawal)
-async function performTransaction(transactionData) {
+// async function performTransaction(transactionData) {
+//     try {
+//         const response = await fetch('http://127.0.0.1:8080/mypay/transaction', {
+//             method: 'POST',
+//             body: JSON.stringify(transactionData),
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             },
+//         });
+
+//         if (!response.ok) {
+//             const errorText = await response.text();
+//             throw new Error(`Error ${response.status}: ${errorText}`);
+//         }
+
+//         const data = await response.json();
+//         return data.message; // Success message from the API
+//     } catch (error) {
+//         console.error('Transaction failed:', error.message);
+//         throw error; // Propagate error to the caller
+//     }
+// }
+
+async function transferToAnotherUser(user_id, nominal, to_user_id) {
     try {
-        const response = await fetch('http://127.0.0.1:8080/mypay/transaction', {
-            method: 'POST',
-            body: JSON.stringify(transactionData),
+        const response = await fetch('http://127.0.0.1:8080/mypay/transfer', {
+            method: 'PATCH',
+            body: JSON.stringify({
+                user_id: user_id,
+                kategori_id: "9375b392-b462-4b77-bd34-00d41fa4c669",
+                nominal: nominal,
+                to_user_id: to_user_id
+            }),
             headers: {
                 'Content-Type': 'application/json',
             },
         });
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Error ${response.status}: ${errorText}`);
-        }
-
         const data = await response.json();
-        return data.message; // Success message from the API
+        return data;
     } catch (error) {
         console.error('Transaction failed:', error.message);
         throw error; // Propagate error to the caller
     }
 }
+
+async function withdrawUserMoney(user_id, nominal, to_user_id) {
+    try {
+        const response = await fetch('http://127.0.0.1:8080/mypay/withdrawal', {
+            method: 'POST',
+            body: JSON.stringify({
+                user_id: user_id,
+                kategori_id: "afce5b84-676b-47b7-b121-8743a6b2c751",
+                nominal: nominal
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Transaction failed:', error.message);
+        throw error; // Propagate error to the caller
+    }
+}
+
 
 async function getKategoriAndSub(id) {
     try {
@@ -222,7 +267,7 @@ async function getKategoriAndSub(id) {
 
         if (!response.ok) {
             const errorText = await response.text();
-            throw new Error(`Error ${response.status}: ${errorText}`);
+            throw new Error(`Error ${response.status}: ${errorText} `);
         }
 
         const data = await response.json();
@@ -248,7 +293,7 @@ async function getJobForPekerja(id) {
 
         if (!response.ok) {
             const errorText = await response.text();
-            throw new Error(`Error ${response.status}: ${errorText}`);
+            throw new Error(`Error ${response.status}: ${errorText} `);
         }
 
         const data = await response.json();
@@ -274,7 +319,7 @@ async function updateJobForPekerja(id, trid) {
 
         if (!response.ok) {
             const errorText = await response.text();
-            throw new Error(`Error ${response.status}: ${errorText}`);
+            throw new Error(`Error ${response.status}: ${errorText} `);
         }
 
         const data = await response.json();
@@ -299,7 +344,7 @@ async function getCurrentJob(id) {
 
         if (!response.ok) {
             const errorText = await response.text();
-            throw new Error(`Error ${response.status}: ${errorText}`);
+            throw new Error(`Error ${response.status}: ${errorText} `);
         }
 
         const data = await response.json();
@@ -324,7 +369,7 @@ async function updateCurrentJob(id) {
 
         if (!response.ok) {
             const errorText = await response.text();
-            throw new Error(`Error ${response.status}: ${errorText}`);
+            throw new Error(`Error ${response.status}: ${errorText} `);
         }
 
         const data = await response.json();
@@ -338,8 +383,9 @@ async function updateCurrentJob(id) {
 
 
 export {
-    getMyPayBalance, getMyPayHistory, performTransaction, topUpMyPayBalance, getCategoryIdByName,
+    getMyPayBalance, getMyPayHistory, getCategoryIdByName,
     getPesananJasa, getStatusIdByName, processPayment,
+    topUpMyPayBalance, transferToAnotherUser, withdrawUserMoney,
 
     getJobForPekerja, getKategoriAndSub, updateJobForPekerja, getCurrentJob, updateCurrentJob
 };

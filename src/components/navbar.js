@@ -44,14 +44,14 @@ export default function NavBar({ status, name }) {
     }
 
     return (
-        <div className={`${status == "block" ? "opacity-0" : 'fixed'} w-full top-0 h-fit flex flex-row p-4 pl-10 pr-10 bg-white shadow-lg`}>
-            <div className={`${status == "" ? 'hidden' : ''} flex flex-row w-1/3`}>
+        <div className={`${status == "block" ? "opacity-0" : 'fixed'} w-full top-0 h-fit flex flex-row p-4 pl-10 pr-10 bg-white shadow-lg flex flex-row`}>
+            <div className={`${status == "" ? 'hidden' : ''} flex flex-row w-full`}>
                 <span className="font-bold text-2xl flex flex-row gap-3 items-center w-full">
                     <p>{status}{status == undefined ? "" : ","}</p>
                     <p className="text-green-600">{name}</p>
                 </span>
             </div>
-            <div className="w-full flex justify-end items-center w-2/3">
+            <div className="w-full flex justify-end items-center w-full">
                 {data()}
             </div>
         </div>
