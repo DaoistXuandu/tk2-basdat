@@ -135,7 +135,12 @@ export default function Profile({ role }) {
         setSaldo(data.saldo)
         setRating(data.rating)
         setAmount(data.amount)
-        setCategory(["Cuci Apartement", "Cuci Sepatu"])
+        if (data.pekerjakategorijasa == null) {
+            setCategory([])
+        }
+        else {
+            setCategory(data.pekerjakategorijasa)
+        }
     }
 
     async function handleUpdate() {

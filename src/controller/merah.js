@@ -5,7 +5,7 @@ async function getMyPayBalance(userId, role) {
     try {
         const response = await fetch('http://127.0.0.1:8080/mypay/balance', {
             method: 'POST',
-            body: JSON.stringify({ 
+            body: JSON.stringify({
                 User: userId,
                 role: role
             }),
@@ -36,9 +36,9 @@ async function getMyPayHistory(userId, role) {
     try {
         const response = await fetch('http://127.0.0.1:8080/mypay/history', {
             method: 'POST',
-            body: JSON.stringify({ 
+            body: JSON.stringify({
                 User: userId,
-                role: role 
+                role: role
             }),
             headers: {
                 'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ async function topUpMyPayBalance(userId, nominal, kategoriId) {
     try {
         const response = await fetch('http://127.0.0.1:8080/mypay/topup', {
             method: 'POST',
-            body: JSON.stringify({ 
+            body: JSON.stringify({
                 userId: userId,
                 nominal: nominal,
                 kategoriId: kategoriId,
@@ -91,7 +91,7 @@ async function getCategoryIdByName(categoryName) {
     try {
         const response = await fetch('http://127.0.0.1:8080/mypay/get-category-id', {
             method: 'POST',
-            body: JSON.stringify({ 
+            body: JSON.stringify({
                 namaKategori: categoryName,
             }),
             headers: {
@@ -135,7 +135,7 @@ async function getPesananJasa(userId) {
     }
 }
 
-export async function getStatusIdByName(statusName) {
+async function getStatusIdByName(statusName) {
     try {
         const response = await fetch('http://127.0.0.1:8080/mypay/getStatusIdByName', {
             method: 'POST',
@@ -157,7 +157,7 @@ export async function getStatusIdByName(statusName) {
     }
 }
 
-export async function processPayment(userId, serviceId) {
+async function processPayment(userId, serviceId) {
     try {
         const response = await fetch('http://127.0.0.1:8080/mypay/processPayment', {
             method: 'POST',
@@ -183,11 +183,6 @@ export async function processPayment(userId, serviceId) {
     }
 }
 
-
-
-
-
-
 // Perform a transaction (topup, payment, transfer, or withdrawal)
 async function performTransaction(transactionData) {
     try {
@@ -212,5 +207,62 @@ async function performTransaction(transactionData) {
     }
 }
 
-export { getMyPayBalance, getMyPayHistory, performTransaction, topUpMyPayBalance, getCategoryIdByName, 
-    getPesananJasa, getStatusIdByName };
+async function getKategoriAndSub(id) {
+    try {
+        const response = await fetch('http://127.0.0.1:8080/pekerja/get-kategori-sub', {
+            method: 'PATCH',
+            body: JSON.stringify({
+                Id: id
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Error ${response.status}: ${errorText}`);
+        }
+
+        const data = await response.json();
+        return data; // Success message from the API
+    } catch (error) {
+        console.error('Transaction failed:', error.message);
+        throw error; // Propagate error to the caller
+    }
+}
+
+
+async function getJobForPekerja(id) {
+    try {
+        const response = await fetch('http://127.0.0.1:8080/jobs/available', {
+            method: 'PATCH',
+            body: JSON.stringify({
+                user_id: id
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Error ${response.status}: ${errorText}`);
+        }
+
+        const data = await response.json();
+        return data; // Success message from the API
+    } catch (error) {
+        console.error('Transaction failed:', error.message);
+        throw error; // Propagate error to the caller
+    }
+}
+
+
+
+export {
+    getMyPayBalance, getMyPayHistory, performTransaction, topUpMyPayBalance, getCategoryIdByName,
+    getPesananJasa, getStatusIdByName, processPayment,
+
+    getJobForPekerja, getKategoriAndSub
+};

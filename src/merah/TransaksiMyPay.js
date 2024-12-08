@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import './TransaksiMyPay.css';
 import User from "../components/user";
 import NavBar from "../components/navbar";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useCookies } from 'react-cookie'
-import { topUpMyPayBalance, getCategoryIdByName, getPesananJasa} from "../controller/merah";  
+import { topUpMyPayBalance, getCategoryIdByName, getPesananJasa, getMyPayBalance, processPayment } from "../controller/merah";
 
 export default function TransaksiMyPay() {
   const [cookies] = useCookies(['userId', 'status', 'nama']);
@@ -24,7 +24,7 @@ export default function TransaksiMyPay() {
 
   // Function to handle top-up input changes
   const handleAmountChange = (e) => {
-      setTopUpAmount(e.target.value);
+    setTopUpAmount(e.target.value);
   };
 
   const banks = [
@@ -51,8 +51,8 @@ export default function TransaksiMyPay() {
     setSelectedServicePrice(selectedService ? selectedService.totalPrice : 0);
   };
 
-   // Fetch user balance on mount
-   useEffect(() => {
+  // Fetch user balance on mount
+  useEffect(() => {
     async function fetchData() {
       try {
         const userId = cookies.userId;
@@ -79,8 +79,8 @@ export default function TransaksiMyPay() {
     setDate(today);
   }, [cookies.userId, cookies.nama, cookies.status]);
 
-   // Handle Top-Up submission
-   async function handleTopUpSubmit(e) {
+  // Handle Top-Up submission
+  async function handleTopUpSubmit(e) {
     e.preventDefault();
 
     if (!topUpAmount || parseInt(topUpAmount) <= 0) {
@@ -99,7 +99,7 @@ export default function TransaksiMyPay() {
       }
 
       const response = await topUpMyPayBalance(userId, parseInt(topUpAmount), kategoriId);
-      
+
       if (response.status) {
         setMessage({ type: 'success', text: 'Top-up berhasil dilakukan!' });
         setTopUpAmount(''); // Reset input
@@ -107,10 +107,10 @@ export default function TransaksiMyPay() {
         // Fetch the updated balance
         const balanceData = await getMyPayBalance(userId, cookies.status === 'Pengguna' ? 0 : 1);
         if (balanceData) {
-            setUserData({
-                name: cookies.nama || '',
-                balance: balanceData.balance,
-            });
+          setUserData({
+            name: cookies.nama || '',
+            balance: balanceData.balance,
+          });
         }
       } else {
         setMessage({ type: 'error', text: response.message || 'Gagal melakukan top-up.' });
@@ -122,27 +122,27 @@ export default function TransaksiMyPay() {
 
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
-  
+
     // Validasi jika tidak ada jasa yang dipilih
     if (!selectedServiceId) {
       setMessage({ type: 'error', text: 'Silakan pilih jasa untuk pembayaran.' });
       return;
     }
-  
+
     try {
       setMessage({ type: '', text: '' }); // Reset pesan
-  
+
       const userId = cookies.userId;
-  
+
       // Kirim request pembayaran
       const response = await processPayment(userId, selectedServiceId);
-  
+
       // Menangani respon dari server
       if (response.error) {
         setMessage({ type: 'error', text: response.error });
       } else {
         setMessage({ type: 'success', text: 'Pembayaran berhasil dilakukan!' });
-  
+
         // Fetch balance terbaru setelah pembayaran
         const balanceData = await getMyPayBalance(userId, cookies.status === 'Pengguna' ? 0 : 1);
         if (balanceData) {
@@ -157,7 +157,7 @@ export default function TransaksiMyPay() {
       setMessage({ type: 'error', text: error.message || 'Terjadi kesalahan saat memproses pembayaran.' });
     }
   };
-  
+
 
   const renderFormState = () => {
     switch (selectedCategory) {
@@ -167,17 +167,17 @@ export default function TransaksiMyPay() {
             <h3>Top Up MyPay</h3>
             <div className="form-group">
               <label>Nominal:</label>
-              <input 
+              <input
                 type="number"
                 value={topUpAmount}
-                onChange={handleAmountChange} 
+                onChange={handleAmountChange}
                 placeholder="Masukkan nominal top up" />
-              <button 
+              <button
                 onClick={handleTopUpSubmit}
                 disabled={wait}
                 className="submit-button"
               >
-                  Top Up
+                Top Up
               </button>
             </div>
           </div>
@@ -200,7 +200,7 @@ export default function TransaksiMyPay() {
               <div className="price-display">
                 Harga Jasa: {formatIDR(selectedServicePrice)}
               </div>
-              <button 
+              <button
                 className="submit-button"
                 onClick={handlePaymentSubmit}
                 disabled={wait}

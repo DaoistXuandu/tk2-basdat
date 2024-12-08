@@ -1,89 +1,124 @@
 import React, { useState, useEffect } from "react";
 import "./PekerjaanJasa.css";
+import { getJobForPekerja, getKategoriAndSub } from "../controller/merah";
+import { useCookies } from 'react-cookie'
 
 const PekerjaanJasa = () => {
+  const [cookies] = useCookies(['userId', 'status', 'nama']);
   const [selectedKategori, setSelectedKategori] = useState("");
   const [selectedSubkategori, setSelectedSubkategori] = useState("");
   const [availableSubkategori, setAvailableSubkategori] = useState([]);
   const [pesananList, setPesananList] = useState([]);
-  const [allPesanan, setAllPesanan] = useState([
-    {
-      id: 1,
-      kategori: "Home Cleaning",
-      subkategori: "Daily Cleaning",
-      namaPelanggan: "John Doe",
-      tanggalPemesanan: "2024-03-20",
-      tanggalPekerjaan: "2024-03-22",
-      totalBiaya: 150000,
-      status: "Mencari Pekerja Terdekat",
-    },
-    {
-      id: 2,
-      kategori: "Massage",
-      subkategori: "Pijat Tradisional",
-      namaPelanggan: "Asep",
-      tanggalPemesanan: "2024-04-10",
-      tanggalPekerjaan: "2024-05-02",
-      totalBiaya: 200000,
-      status: "Mencari Pekerja Terdekat",
-    },
-    {
-      id: 3,
-      kategori: "Massage",
-      subkategori: "Refleksi",
-      namaPelanggan: "Budi",
-      tanggalPemesanan: "2024-10-10",
-      tanggalPekerjaan: "2024-05-12",
-      totalBiaya: 320000,
-      status: "Mencari Pekerja Terdekat",
-    },
-    {
-      id: 4,
-      kategori: "Home Cleaning",
-      subkategori: "Setrika",
-      namaPelanggan: "Agus cuguy",
-      tanggalPemesanan: "2024-11-10",
-      tanggalPekerjaan: "2024-07-22",
-      totalBiaya: 250000,
-      status: "Mencari Pekerja Terdekat",
-    },
-    {
-      id: 5,
-      kategori: "Home Cleaning",
-      subkategori: "Pembersihan Dapur",
-      namaPelanggan: "Aguss guss",
-      tanggalPemesanan: "2024-11-10",
-      tanggalPekerjaan: "2024-07-22",
-      totalBiaya: 250000,
-      status: "Pesanan Selesai",
-    },
-  ]);
+  const [kategoriData, setKategoriData] = useState([])
+  const [allPesanan, setAllPesanan] = useState([])
+  // const [allPesanan, setAllPesanan] = useState([
+  //   {
+  //     id: 1,
+  //     kategori: "Home Cleaning",
+  //     subkategori: "Daily Cleaning",
+  //     namaPelanggan: "John Doe",
+  //     tanggalPemesanan: "2024-03-20",
+  //     tanggalPekerjaan: "2024-03-22",
+  //     totalBiaya: 150000,
+  //     status: "Mencari Pekerja Terdekat",
+  //   },
+  //   {
+  //     id: 2,
+  //     kategori: "Massage",
+  //     subkategori: "Pijat Tradisional",
+  //     namaPelanggan: "Asep",
+  //     tanggalPemesanan: "2024-04-10",
+  //     tanggalPekerjaan: "2024-05-02",
+  //     totalBiaya: 200000,
+  //     status: "Mencari Pekerja Terdekat",
+  //   },
+  //   {
+  //     id: 3,
+  //     kategori: "Massage",
+  //     subkategori: "Refleksi",
+  //     namaPelanggan: "Budi",
+  //     tanggalPemesanan: "2024-10-10",
+  //     tanggalPekerjaan: "2024-05-12",
+  //     totalBiaya: 320000,
+  //     status: "Mencari Pekerja Terdekat",
+  //   },
+  //   {
+  //     id: 4,
+  //     kategori: "Home Cleaning",
+  //     subkategori: "Setrika",
+  //     namaPelanggan: "Agus cuguy",
+  //     tanggalPemesanan: "2024-11-10",
+  //     tanggalPekerjaan: "2024-07-22",
+  //     totalBiaya: 250000,
+  //     status: "Mencari Pekerja Terdekat",
+  //   },
+  //   {
+  //     id: 5,
+  //     kategori: "Home Cleaning",
+  //     subkategori: "Pembersihan Dapur",
+  //     namaPelanggan: "Aguss guss",
+  //     tanggalPemesanan: "2024-11-10",
+  //     tanggalPekerjaan: "2024-07-22",
+  //     totalBiaya: 250000,
+  //     status: "Pesanan Selesai",
+  //   },
+  // ]);
 
-  const kategoriData = [
-    {
-      id: 1,
-      name: "Home Cleaning",
-      subkategori: ["Setrika", "Daily Cleaning", "Pembersihan Dapur"],
-    },
-    {
-      id: 2,
-      name: "Massage",
-      subkategori: ["Pijat Tradisional", "Refleksi", "Sport Massage"],
-    },
-  ];
+  async function getInitialValue() {
+    let data = await getKategoriAndSub(cookies.userId);
+    if (data.status) {
+      const current_value = []
+
+      data.kategori.map((input, index) => {
+        current_value.push({
+          name: input,
+          subkategori: data.subkategori[index]
+        })
+      })
+      setKategoriData(current_value)
+    }
+    else {
+      alert(data.message)
+    }
+
+    data = await getJobForPekerja(cookies.userId);
+    if (data.status) {
+      const current_value = []
+      data.pesanan.map((input) => {
+        current_value.push({
+          id: input.id,
+          kategori: input.kategori,
+          subkategori: input.subkategori,
+          namaPelanggan: input.nama,
+          tanggalPemesanan: input.tanggal,
+          totalBiaya: input.total,
+          sesi: input.sesi,
+          status: "Mencari Pekerja Terdekat"
+        })
+      })
+      setAllPesanan(current_value)
+    }
+    else {
+      alert(data.message)
+    }
+  }
 
   // Load initial data when component mounts
+  useEffect(() => {
+    getInitialValue()
+  }, []);
+
   useEffect(() => {
     const initialPesanan = allPesanan.filter(
       (pesanan) => pesanan.status === "Mencari Pekerja Terdekat"
     );
     setPesananList(initialPesanan);
-  }, []);
+  }, [allPesanan])
 
   const handleKategoriChange = (e) => {
     const selectedKategori = e.target.value;
     setSelectedKategori(selectedKategori);
-    
+
     const kategori = kategoriData.find((k) => k.name === selectedKategori);
     setAvailableSubkategori(kategori ? kategori.subkategori : []);
     setSelectedSubkategori("");
@@ -175,9 +210,10 @@ const PekerjaanJasa = () => {
                 {new Date(pesanan.tanggalPemesanan).toLocaleDateString("id-ID")}
               </p>
               <p>
-                Tgl Pekerjaan:{" "}
-                {new Date(pesanan.tanggalPekerjaan).toLocaleDateString("id-ID")}
+                Sesi:{" "}
+                {pesanan.sesi}
               </p>
+
             </div>
             <div className="pesanan-action">
               <p>Total: {formatCurrency(pesanan.totalBiaya)}</p>
