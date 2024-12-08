@@ -1,8 +1,10 @@
+import { PORT } from "./deploy";
+
 // Controller for MyPay API calls
 // Fetching MyPay balance
 async function getMyPayBalance(userId, role) {
     try {
-        const response = await fetch('http://127.0.0.1:8080/mypay/balance', {
+        const response = await fetch(`${PORT}/mypay/balance`, {
             method: 'POST',
             body: JSON.stringify({
                 User: userId,
@@ -33,7 +35,7 @@ async function getMyPayBalance(userId, role) {
 // Fetching MyPay transaction history
 async function getMyPayHistory(userId, role) {
     try {
-        const response = await fetch('http://127.0.0.1:8080/mypay/history', {
+        const response = await fetch(`${PORT}/mypay/history`, {
             method: 'POST',
             body: JSON.stringify({
                 User: userId,
@@ -61,7 +63,7 @@ async function getMyPayHistory(userId, role) {
 async function topUpMyPayBalance(userId, nominal, kategoriId) {
     try {
         console.log("TEST: " + userId + " " + nominal + " " + kategoriId)
-        const response = await fetch('http://127.0.0.1:8080/mypay/topup', {
+        const response = await fetch(`${PORT}/mypay/topup`, {
             method: 'POST',
             body: JSON.stringify({
                 userId: userId,
@@ -89,7 +91,7 @@ async function topUpMyPayBalance(userId, nominal, kategoriId) {
 // Fetch the category UUID based on category name
 async function getCategoryIdByName(categoryName) {
     try {
-        const response = await fetch('http://127.0.0.1:8080/mypay/get-category-id', {
+        const response = await fetch(`${PORT}/mypay/get-category-id`, {
             method: 'POST',
             body: JSON.stringify({
                 namaKategori: categoryName,
@@ -114,7 +116,7 @@ async function getCategoryIdByName(categoryName) {
 
 async function getPesananJasa(userId) {
     try {
-        const response = await fetch('http://127.0.0.1:8080/mypay/getPesananJasa', {
+        const response = await fetch(`${PORT}/mypay/getPesananJasa`, {
             method: 'PATCH',
             body: JSON.stringify({
                 user: userId
@@ -137,7 +139,7 @@ async function getPesananJasa(userId) {
 
 async function getStatusIdByName(statusName) {
     try {
-        const response = await fetch('http://127.0.0.1:8080/mypay/getStatusIdByName', {
+        const response = await fetch(`${PORT}/mypay/getStatusIdByName`, {
             method: 'POST',
             body: JSON.stringify({ statusName: statusName }),
             headers: {
@@ -159,7 +161,7 @@ async function getStatusIdByName(statusName) {
 
 async function processPayment(userId, serviceId) {
     try {
-        const response = await fetch('http://127.0.0.1:8080/mypay/processPayment', {
+        const response = await fetch(`${PORT}/mypay/processPayment`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -183,33 +185,9 @@ async function processPayment(userId, serviceId) {
     }
 }
 
-// Perform a transaction (topup, payment, transfer, or withdrawal)
-// async function performTransaction(transactionData) {
-//     try {
-//         const response = await fetch('http://127.0.0.1:8080/mypay/transaction', {
-//             method: 'POST',
-//             body: JSON.stringify(transactionData),
-//             headers: {
-//                 'Content-Type': 'application/json',
-//             },
-//         });
-
-//         if (!response.ok) {
-//             const errorText = await response.text();
-//             throw new Error(`Error ${response.status}: ${errorText}`);
-//         }
-
-//         const data = await response.json();
-//         return data.message; // Success message from the API
-//     } catch (error) {
-//         console.error('Transaction failed:', error.message);
-//         throw error; // Propagate error to the caller
-//     }
-// }
-
 async function transferToAnotherUser(user_id, nominal, to_user_id) {
     try {
-        const response = await fetch('http://127.0.0.1:8080/mypay/transfer', {
+        const response = await fetch(`${PORT}/mypay/transfer`, {
             method: 'PATCH',
             body: JSON.stringify({
                 user_id: user_id,
@@ -232,7 +210,7 @@ async function transferToAnotherUser(user_id, nominal, to_user_id) {
 
 async function withdrawUserMoney(user_id, nominal, to_user_id) {
     try {
-        const response = await fetch('http://127.0.0.1:8080/mypay/withdrawal', {
+        const response = await fetch(`${PORT}/mypay/withdrawal`, {
             method: 'POST',
             body: JSON.stringify({
                 user_id: user_id,
@@ -255,7 +233,7 @@ async function withdrawUserMoney(user_id, nominal, to_user_id) {
 
 async function getKategoriAndSub(id) {
     try {
-        const response = await fetch('http://127.0.0.1:8080/pekerja/get-kategori-sub', {
+        const response = await fetch(`${PORT}/pekerja/get-kategori-sub`, {
             method: 'PATCH',
             body: JSON.stringify({
                 Id: id
@@ -281,7 +259,7 @@ async function getKategoriAndSub(id) {
 
 async function getJobForPekerja(id) {
     try {
-        const response = await fetch('http://127.0.0.1:8080/jobs/available', {
+        const response = await fetch(`${PORT}/jobs/available`, {
             method: 'PATCH',
             body: JSON.stringify({
                 user_id: id
@@ -306,7 +284,7 @@ async function getJobForPekerja(id) {
 
 async function updateJobForPekerja(id, trid) {
     try {
-        const response = await fetch('http://127.0.0.1:8080/jobs/get-job', {
+        const response = await fetch(`${PORT}/jobs/get-job`, {
             method: 'PATCH',
             body: JSON.stringify({
                 user_id: id,
@@ -332,7 +310,7 @@ async function updateJobForPekerja(id, trid) {
 
 async function getCurrentJob(id) {
     try {
-        const response = await fetch('http://127.0.0.1:8080/jobs/job-pekerja-id', {
+        const response = await fetch(`${PORT}/jobs/job-pekerja-id`, {
             method: 'PATCH',
             body: JSON.stringify({
                 user_id: id,
@@ -357,7 +335,7 @@ async function getCurrentJob(id) {
 
 async function updateCurrentJob(id) {
     try {
-        const response = await fetch('http://127.0.0.1:8080/jobs/job-pekerja-update', {
+        const response = await fetch(`${PORT}/jobs/job-pekerja-update`, {
             method: 'PATCH',
             body: JSON.stringify({
                 transaksi_pemesanan_jasa_id: id,

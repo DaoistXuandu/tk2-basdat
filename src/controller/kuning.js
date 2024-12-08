@@ -1,6 +1,8 @@
+import { PORT } from "./deploy";
+
 async function login(NoHp, Pwd) {
     try {
-        const response = await fetch('http://127.0.0.1:8080/login', {
+        const response = await fetch(`${PORT}/login`, {
             method: 'POST',
             body: JSON.stringify({
                 NoHP: NoHp,
@@ -24,7 +26,7 @@ async function login(NoHp, Pwd) {
 
 async function register(role, name, sex, number, password, date, address, bank, noRek, npwp, link, rating, amount) {
     try {
-        const response = await fetch('http://127.0.0.1:8080/register', {
+        const response = await fetch(`${PORT}/register`, {
             method: 'POST',
             body: JSON.stringify({
                 role: role,
@@ -67,7 +69,7 @@ async function updateUser(id, role, name, sex, number, date, address, bank, noRe
             cur_number = cur_number.substring(1, cur_number.length)
         }
 
-        const response = await fetch('http://127.0.0.1:8080/updateUser', {
+        const response = await fetch(`${PORT}/updateUser`, {
             method: 'PATCH',
             body: JSON.stringify({
                 user: id,
@@ -123,7 +125,7 @@ async function uploadImage(image) {
 
 async function getUser(userId, role) {
     try {
-        const response = await fetch('http://127.0.0.1:8080/getUser', {
+        const response = await fetch(`${PORT}/getUser`, {
             method: 'PATCH',
             body: JSON.stringify({
                 user: userId,
