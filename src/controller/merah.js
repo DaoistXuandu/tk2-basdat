@@ -61,6 +61,7 @@ async function getMyPayHistory(userId, role) {
 // Handling MyPay Top-Up
 async function topUpMyPayBalance(userId, nominal, kategoriId) {
     try {
+        console.log("TEST: " + userId + " " + nominal + " " + kategoriId)
         const response = await fetch('http://127.0.0.1:8080/mypay/topup', {
             method: 'POST',
             body: JSON.stringify({
@@ -79,7 +80,7 @@ async function topUpMyPayBalance(userId, nominal, kategoriId) {
         }
 
         const data = await response.json();
-        return data.message; // Expecting a success message from the server
+        return { message: data.message, status: true }; // Expecting a success message from the server
     } catch (error) {
         console.error('Failed to process top-up:', error.message);
         throw error; // Propagate error to the caller
@@ -115,7 +116,7 @@ async function getCategoryIdByName(categoryName) {
 async function getPesananJasa(userId) {
     try {
         const response = await fetch('http://127.0.0.1:8080/mypay/getPesananJasa', {
-            method: 'GET',
+            method: 'PATCH',
             body: JSON.stringify({
                 user: userId
             }),

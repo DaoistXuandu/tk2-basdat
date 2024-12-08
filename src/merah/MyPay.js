@@ -1,12 +1,13 @@
 import React from 'react';
 import { useEffect, useState } from "react";
-import './MyPay.css'; 
+import './MyPay.css';
 import { useCookies } from 'react-cookie'
-import { getMyPayBalance, getMyPayHistory } from "../controller/merah";  
+import { getMyPayBalance, getMyPayHistory } from "../controller/merah";
 
 
 export default function MyPay() {
-  const [cookies] = useCookies(['userId', 'status', 'name']);
+  const [cookies, setCookie] = useCookies(['userId', 'status', 'name']);
+  const [errorMessage, setErrorMessage] = useState("")
   const [userData, setUserData] = useState({
     phoneNumber: '',
     balance: 0,
@@ -15,9 +16,9 @@ export default function MyPay() {
 
   useEffect(() => {
     async function fetchData() {
-      try{
+      try {
         const userId = cookies.userId;
-        
+
         // Fetch MyPay balance
         const balanceData = await getMyPayBalance(userId, cookies.status == "Pengguna" ? 0 : 1);
         if (balanceData) {
@@ -29,8 +30,8 @@ export default function MyPay() {
 
         // Fetch MyPay transaction history
         const historyData = await getMyPayHistory(userId, cookies.status == "Pengguna" ? 0 : 1);
-        if (historyData && historyData.History) { 
-          setTransactionHistory(historyData.History); // Access the History property
+        if (historyData != null) {
+          setTransactionHistory(historyData); // Access the History property
         } else {
           setTransactionHistory([]); // Fallback to an empty array
         }
@@ -43,6 +44,8 @@ export default function MyPay() {
 
     fetchData();
   }, [cookies.userId]);
+
+
 
   // Format currency to IDR
   const formatIDR = (amount) => {
@@ -77,15 +80,15 @@ export default function MyPay() {
         <div className="transaction-list">
           {transactionHistory.length > 0 ? (
             transactionHistory.map((transaction) => (
-              <div key={transaction.ID} className="transaction-item">
+              <div key={transaction.id} className="transaction-item">
                 <div>
-                  <p className={`amount ${transaction.Nominal > 0 ? 'positive' : 'negative'}`}>
-                    {formatIDR(transaction.Nominal)}
+                  <p className={`amount ${transaction.nominal > 0 ? 'positive' : 'negative'}`}>
+                    {formatIDR(transaction.nominal)}
                   </p>
-                  <p className="category">{transaction.Kategori}</p>
+                  <p className="category">{transaction.category}</p>
                 </div>
                 <p className="date">
-                  {new Date(transaction.Tgl).toLocaleDateString('id-ID', {
+                  {new Date(transaction.date).toLocaleDateString('id-ID', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'

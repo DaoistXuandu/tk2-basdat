@@ -45,7 +45,7 @@ function App() {
         <Route path="homepage/:id/form" element={<BookingForm />} />
 
         <Route path="mypay" element={<MyPay />} />
-        <Route path='mypay/transaksi' element={<TransaksiMyPay role={cookies.status} />} />
+        <Route path='mypay/transaksi' element={<TransaksiMyPay />} />
 
         <Route path="transaksiMyPayPengguna" element={<TransaksiMyPay status="Pengguna" role="Pengguna" />} />
         <Route path="transaksiMyPayPekerja" element={<TransaksiMyPay status="Pekerja" role="Pekerja" />} />

@@ -60,7 +60,7 @@ const StatusPekerjaanJasa = () => {
 
   useEffect(() => {
     getData()
-  }, [])
+  }, [cookies.userId])
 
   useEffect(() => {
     setPesananList(dummyPesanan);

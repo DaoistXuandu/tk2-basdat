@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import "./PekerjaanJasa.css";
 import { getJobForPekerja, getKategoriAndSub, updateJobForPekerja } from "../controller/merah";
 import { useCookies } from 'react-cookie'
-import { couldStartTrivia } from "typescript";
 
 const PekerjaanJasa = () => {
   const [cookies] = useCookies(['userId', 'status', 'nama']);
@@ -23,6 +22,7 @@ const PekerjaanJasa = () => {
             name: input,
             subkategori: data.subkategori[index]
           })
+          return 1
         })
       }
       setKategoriData(current_value)
@@ -46,6 +46,7 @@ const PekerjaanJasa = () => {
             sesi: input.sesi,
             status: "Mencari Pekerja Terdekat"
           })
+          return 1
         })
       }
       setAllPesanan(current_value)
@@ -58,7 +59,7 @@ const PekerjaanJasa = () => {
   // Load initial data when component mounts
   useEffect(() => {
     getInitialValue()
-  }, []);
+  }, [cookies.userId]);
 
   useEffect(() => {
     const initialPesanan = allPesanan.filter(
@@ -157,7 +158,7 @@ const PekerjaanJasa = () => {
       </div>
 
       <div className="pesanan-list">
-        {pesananList.length == 0 ? "Belum ada pesanan" :
+        {pesananList.length === 0 ? "Belum ada pesanan" :
           (
             pesananList.map((pesanan) => (
               <div key={pesanan.id} className="pesanan-card">

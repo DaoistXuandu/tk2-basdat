@@ -99,8 +99,8 @@ export default function TransaksiMyPay() {
       }
 
       const response = await topUpMyPayBalance(userId, parseInt(topUpAmount), kategoriId);
-
       if (response.status) {
+        alert("Top Up Berhasil")
         setMessage({ type: 'success', text: 'Top-up berhasil dilakukan!' });
         setTopUpAmount(''); // Reset input
 
