@@ -40,18 +40,20 @@ const StatusPekerjaanJasa = () => {
     const data = await getCurrentJob(cookies.userId)
     if (data.status) {
       let current_value = []
-      data.pekerjaan.map(item => {
-        current_value.push({
-          id: item.id,
-          kategori: item.kategori,
-          subkategori: item.subkategori,
-          namaPelanggan: item.nama,
-          tanggalPemesanan: item.tanggal,
-          totalBiaya: item.total,
-          sesi: item.sesi,
-          status: STATUS_OPTIONS[item.status - 3]
+      if (data.pekerjaan != null) {
+        data.pekerjaan.map(item => {
+          current_value.push({
+            id: item.id,
+            kategori: item.kategori,
+            subkategori: item.subkategori,
+            namaPelanggan: item.nama,
+            tanggalPemesanan: item.tanggal,
+            totalBiaya: item.total,
+            sesi: item.sesi,
+            status: STATUS_OPTIONS[item.status - 3]
+          })
         })
-      })
+      }
       setDummyPesan(current_value)
     }
   }
@@ -165,33 +167,38 @@ const StatusPekerjaanJasa = () => {
       </div>
 
       <div className="pesanan-list">
-        {pesananList.map((pesanan) => (
-          <div key={pesanan.id} className="pesanan-card">
-            <div className="pesanan-details">
-              <p>
-                <strong>{pesanan.subkategori}</strong> |{" "}
-                {pesanan.namaPelanggan}
-              </p>
-              <p>
-                Tgl Pemesanan:{" "}
-                {new Date(pesanan.tanggalPemesanan).toLocaleDateString("id-ID")}
-              </p>
-              <p>
-                Sesi:{" "}
-                {pesanan.sesi}
-              </p>
-              <p>
-                Status Pesanan:{" "}
-                {pesanan.status}
-              </p>
+        {
+          pesananList.length == 0 ? "Belum ada pekerjaan yang diambil" :
+            (
+              pesananList.map((pesanan) => (
+                <div key={pesanan.id} className="pesanan-card">
+                  <div className="pesanan-details">
+                    <p>
+                      <strong>{pesanan.subkategori}</strong> |{" "}
+                      {pesanan.namaPelanggan}
+                    </p>
+                    <p>
+                      Tgl Pemesanan:{" "}
+                      {new Date(pesanan.tanggalPemesanan).toLocaleDateString("id-ID")}
+                    </p>
+                    <p>
+                      Sesi:{" "}
+                      {pesanan.sesi}
+                    </p>
+                    <p>
+                      Status Pesanan:{" "}
+                      {pesanan.status}
+                    </p>
 
-            </div>
-            <div className="pesanan-action">
-              <p>Total: {formatCurrency(pesanan.totalBiaya)}</p>
-              {renderStatusButton(pesanan)}
-            </div>
-          </div>
-        ))}
+                  </div>
+                  <div className="pesanan-action">
+                    <p>Total: {formatCurrency(pesanan.totalBiaya)}</p>
+                    {renderStatusButton(pesanan)}
+                  </div>
+                </div>
+              ))
+            )
+        }
       </div>
 
     </div>

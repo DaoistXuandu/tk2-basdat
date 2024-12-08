@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./PekerjaanJasa.css";
 import { getJobForPekerja, getKategoriAndSub, updateJobForPekerja } from "../controller/merah";
 import { useCookies } from 'react-cookie'
+import { couldStartTrivia } from "typescript";
 
 const PekerjaanJasa = () => {
   const [cookies] = useCookies(['userId', 'status', 'nama']);
@@ -16,13 +17,14 @@ const PekerjaanJasa = () => {
     let data = await getKategoriAndSub(cookies.userId);
     if (data.status) {
       const current_value = []
-
-      data.kategori.map((input, index) => {
-        current_value.push({
-          name: input,
-          subkategori: data.subkategori[index]
+      if (data.kategori != null) {
+        data.kategori.map((input, index) => {
+          current_value.push({
+            name: input,
+            subkategori: data.subkategori[index]
+          })
         })
-      })
+      }
       setKategoriData(current_value)
     }
     else {
@@ -32,18 +34,20 @@ const PekerjaanJasa = () => {
     data = await getJobForPekerja(cookies.userId);
     if (data.status) {
       const current_value = []
-      data.pesanan.map((input) => {
-        current_value.push({
-          id: input.id,
-          kategori: input.kategori,
-          subkategori: input.subkategori,
-          namaPelanggan: input.nama,
-          tanggalPemesanan: input.tanggal,
-          totalBiaya: input.total,
-          sesi: input.sesi,
-          status: "Mencari Pekerja Terdekat"
+      if (data.pesanan != null) {
+        data.pesanan.map((input) => {
+          current_value.push({
+            id: input.id,
+            kategori: input.kategori,
+            subkategori: input.subkategori,
+            namaPelanggan: input.nama,
+            tanggalPemesanan: input.tanggal,
+            totalBiaya: input.total,
+            sesi: input.sesi,
+            status: "Mencari Pekerja Terdekat"
+          })
         })
-      })
+      }
       setAllPesanan(current_value)
     }
     else {
@@ -153,31 +157,35 @@ const PekerjaanJasa = () => {
       </div>
 
       <div className="pesanan-list">
-        {pesananList.map((pesanan) => (
-          <div key={pesanan.id} className="pesanan-card">
-            <div className="pesanan-details">
-              <p>
-                <strong>{pesanan.subkategori}</strong> |{" "}
-                {pesanan.namaPelanggan}
-              </p>
-              <p>
-                Tgl Pemesanan:{" "}
-                {new Date(pesanan.tanggalPemesanan).toLocaleDateString("id-ID")}
-              </p>
-              <p>
-                Sesi:{" "}
-                {pesanan.sesi}
-              </p>
+        {pesananList.length == 0 ? "Belum ada pesanan" :
+          (
+            pesananList.map((pesanan) => (
+              <div key={pesanan.id} className="pesanan-card">
+                <div className="pesanan-details">
+                  <p>
+                    <strong>{pesanan.subkategori}</strong> |{" "}
+                    {pesanan.namaPelanggan}
+                  </p>
+                  <p>
+                    Tgl Pemesanan:{" "}
+                    {new Date(pesanan.tanggalPemesanan).toLocaleDateString("id-ID")}
+                  </p>
+                  <p>
+                    Sesi:{" "}
+                    {pesanan.sesi}
+                  </p>
 
-            </div>
-            <div className="pesanan-action">
-              <p>Total: {formatCurrency(pesanan.totalBiaya)}</p>
-              <button onClick={() => handleKerjakanPesanan(pesanan.id)}>
-                Kerjakan Pesanan
-              </button>
-            </div>
-          </div>
-        ))}
+                </div>
+                <div className="pesanan-action">
+                  <p>Total: {formatCurrency(pesanan.totalBiaya)}</p>
+                  <button onClick={() => handleKerjakanPesanan(pesanan.id)}>
+                    Kerjakan Pesanan
+                  </button>
+                </div>
+              </div>
+            ))
+          )
+        }
       </div>
     </div>
   );
