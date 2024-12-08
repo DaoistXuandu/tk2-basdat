@@ -3,7 +3,6 @@ import './TransaksiMyPay.css';
 import { useEffect } from "react";
 import { useCookies } from 'react-cookie'
 import { topUpMyPayBalance, getCategoryIdByName, getPesananJasa, getMyPayBalance, processPayment, transferToAnotherUser, withdrawUserMoney } from "../controller/merah";
-import { WatchFileKind } from 'typescript';
 
 export default function TransaksiMyPay() {
   const [cookies] = useCookies(['userId', 'status', 'name']);
@@ -14,7 +13,6 @@ export default function TransaksiMyPay() {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedServicePrice, setSelectedServicePrice] = useState(0);
   const [topUpAmount, setTopUpAmount] = useState('');
-  const [message, setMessage] = useState(["Awal", "green"]);
   const [wait, setWait] = useState(false);
   const [date, setDate] = useState("");
   const [services, setServices] = useState([]); // Untuk menyimpan pesanan jasa
@@ -48,8 +46,9 @@ export default function TransaksiMyPay() {
   const handleServiceChange = (e) => {
     const serviceId = e.target.value;
     setSelectedServiceId(serviceId);
+
     const selectedService = services.find(service => service.id === serviceId);
-    setSelectedServicePrice(selectedService ? selectedService.totalPrice : 0);
+    setSelectedServicePrice(selectedService ? selectedService.total_biaya : 0);
   };
 
   async function fetchData() {
@@ -65,9 +64,10 @@ export default function TransaksiMyPay() {
 
       // Ambil daftar pesanan jasa untuk pengguna
       const ordersData = await getPesananJasa(userId);
-      if (ordersData && ordersData.services) {
-        setServices(ordersData.services); // Menyimpan data layanan yang dipesan
+      if (ordersData.status) {
+        setServices(ordersData.pesanan); // Menyimpan data layanan yang dipesan
       }
+      console.log(ordersData)
 
     } catch (error) {
       console.error('Error fetching balance:', error.message);
@@ -79,6 +79,7 @@ export default function TransaksiMyPay() {
     fetchData();
     const today = new Date().toISOString().split("T")[0];
     setDate(today);
+    console.log(cookies.userId)
   }, [cookies.userId, cookies.nama, cookies.status]);
 
   // Handle Top-Up submission
@@ -86,24 +87,22 @@ export default function TransaksiMyPay() {
     e.preventDefault();
 
     if (!topUpAmount || parseInt(topUpAmount) <= 0) {
-      setMessage({ type: 'error', text: 'Nominal top-up harus lebih besar dari 0.' });
+      alert('Nominal top-up harus lebih besar dari 0.');
       return;
     }
 
     try {
-      setMessage({ type: '', text: '' });
       const userId = cookies.userId;
       const kategoriId = await getCategoryIdByName('topup');
 
       if (!kategoriId) {
-        setMessage({ type: 'error', text: 'Kategori tidak ditemukan.' });
+        alert('Kategori tidak ditemukan.');
         return;
       }
 
       const response = await topUpMyPayBalance(userId, parseInt(topUpAmount), kategoriId);
       if (response.status) {
         alert("Top Up Berhasil")
-        setMessage({ type: 'success', text: 'Top-up berhasil dilakukan!' });
         setTopUpAmount(''); // Reset input
 
         // Fetch the updated balance
@@ -115,35 +114,33 @@ export default function TransaksiMyPay() {
           });
         }
       } else {
-        setMessage({ type: 'error', text: response.message || 'Gagal melakukan top-up.' });
+        alert(response.message || 'Gagal melakukan top-up.');
       }
     } catch (error) {
-      setMessage({ type: 'error', text: error.message || 'Gagal melakukan top-up.' });
+      alert('Gagal melakukan top-up.');
     }
   }
 
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
-
+    setWait()
     // Validasi jika tidak ada jasa yang dipilih
     if (!selectedServiceId) {
-      setMessage({ type: 'error', text: 'Silakan pilih jasa untuk pembayaran.' });
+      alert('Silakan pilih jasa untuk pembayaran.');
       return;
     }
 
     try {
-      setMessage({ type: '', text: '' }); // Reset pesan
-
       const userId = cookies.userId;
 
       // Kirim request pembayaran
       const response = await processPayment(userId, selectedServiceId);
 
       // Menangani respon dari server
-      if (response.error) {
-        setMessage({ type: 'error', text: response.error });
+      if (!response.status) {
+        alert(response.message);
       } else {
-        setMessage({ type: 'success', text: 'Pembayaran berhasil dilakukan!' });
+        alert('Pembayaran berhasil dilakukan');
 
         // Fetch balance terbaru setelah pembayaran
         const balanceData = await getMyPayBalance(userId, cookies.status === 'Pengguna' ? 0 : 1);
@@ -156,7 +153,7 @@ export default function TransaksiMyPay() {
       }
     } catch (error) {
       // Tangani error apabila ada
-      setMessage({ type: 'error', text: error.message || 'Terjadi kesalahan saat memproses pembayaran.' });
+      alert('Terjadi kesalahan saat memproses pembayaran.');
     }
   };
 
@@ -237,7 +234,7 @@ export default function TransaksiMyPay() {
 
       case 'payment':
         return (
-          <div className="form-state">
+          <form className="form-state">
             <h3>Pembayaran Jasa</h3>
             <div className="form-group">
               <label>Pesanan Jasa:</label>
@@ -245,7 +242,7 @@ export default function TransaksiMyPay() {
                 <option value="">Pilih Jasa</option>
                 {services.map(service => (
                   <option key={service.id} value={service.id}>
-                    {service.NamaJasa} - {formatIDR(service.TotalBiaya)}
+                    {service.nama_jasa} (Sesi: {service.sesi}) - {formatIDR(service.total_biaya)}
                   </option>
                 ))}
               </select>
@@ -260,7 +257,7 @@ export default function TransaksiMyPay() {
                 {wait ? 'Memproses...' : 'Bayar'}
               </button>
             </div>
-          </div>
+          </form>
         );
 
       case 'transfer':
