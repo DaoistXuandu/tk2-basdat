@@ -1,74 +1,61 @@
-// src/components/DiscountPage.jsx
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useCookies } from 'react-cookie';
 import { FaTag, FaGift } from 'react-icons/fa';
 import VoucherList from './VoucherList';
 import PromoList from './PromoList';
-// import Testimoni from './Testimoni';
-
-const discounts = {
-  vouchers: [
-    {
-      code: 'VOUCHER10',
-      discount: '10%',
-      minTransaction: 'Rp 50,000',
-      validDays: '30',
-      usageQuota: '100',
-      price: 'Rp 5,000',
-    },
-    {
-      code: 'VOUCHER20',
-      discount: '20%',
-      minTransaction: 'Rp 100,000',
-      validDays: '15',
-      usageQuota: '50',
-      price: 'Rp 10,000',
-    },
-    {
-      code: 'VOUCHER30',
-      discount: '30%',
-      minTransaction: 'Rp 150,000',
-      validDays: '7',
-      usageQuota: '20',
-      price: 'Rp 15,000',
-    },
-  ],
-  promos: [
-    {
-      code: 'PROMO1',
-      expiryDate: '2024-12-31',
-    },
-    {
-      code: 'PROMO2',
-      expiryDate: '2024-11-30',
-    },
-    {
-      code: 'PROMO3',
-      expiryDate: '2024-10-15',
-    },
-  ],
-  testimonis: [
-    {
-      name: 'Ahmad',
-      message: 'Voucher ini sangat membantu dalam belanja saya!',
-    },
-    {
-      name: 'Siti',
-      message: 'Promo yang menarik dan mudah digunakan.',
-    },
-    {
-      name: 'Budi',
-      message: 'Layanan pelanggan yang luar biasa.',
-    },
-  ],
-};
+import { fetchDiskon } from '../../controller/biru';
 
 const DiscountPage = () => {
+    const [cookies] = useCookies(['userId']);
+    const [vouchers, setVouchers] = useState([]);
+    const [promos, setPromos] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const loadDiscountData = async () => {
+            try {
+                const data = await fetchDiskon();
+                console.log("Fetched data:", data);
+
+                if (data && data.status) {
+                    const formattedVouchers = data.voucher.map((v) => ({
+                        kode: v.kode,
+                        potongan: v.potongan,
+                        minTrPemesanan: v.minTrPemesanan,
+                        jmlHariBerlaku: v.jmlHariBerlaku,
+                        kuotaPenggunaan: v.kuotaPenggunaan,
+                        harga: v.harga,
+                    }));
+
+                    const formattedPromos = data.promo.map((p) => ({
+                        kode: p.kode,
+                        tglAkhirBerlaku: p.tglAkhirBerlaku,
+                    }));
+
+                    setVouchers(formattedVouchers);
+                    setPromos(formattedPromos);
+                } else {
+                    setError('Gagal memuat data diskon.');
+                }
+            } catch (err) {
+                setError(`Terjadi kesalahan: ${err.message}`);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadDiscountData();
+    }, []);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
+
   return (
     <div className="container mx-auto p-6">
-      <br></br>
-      <br></br>
-      <br></br>
+      <br />
+      <br />
+      <br />
       <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-8 rounded-lg shadow-xl">
         <h2 className="text-4xl font-extrabold text-center text-indigo-700 flex items-center justify-center space-x-2 mb-8">
           <FaTag className="text-indigo-500" />
@@ -84,7 +71,7 @@ const DiscountPage = () => {
                 Voucher
               </h3>
             </div>
-            <VoucherList vouchers={discounts.vouchers} />
+            <VoucherList vouchers={vouchers} />
           </section>
 
           {/* Separator */}
@@ -98,22 +85,8 @@ const DiscountPage = () => {
                 Promo
               </h3>
             </div>
-            <PromoList promos={discounts.promos} />
+            <PromoList promos={promos} />
           </section>
-
-          {/* Separator
-          <hr className="border-gray-300" /> */}
-
-          {/* Testimoni Section
-          <section aria-labelledby="testimoni-section">
-            <div className="flex items-center space-x-2 mb-6">
-              <FaTag className="text-yellow-500 text-2xl" />
-              <h3 id="testimoni-section" className="text-3xl font-semibold text-gray-800">
-                Testimoni
-              </h3>
-            </div>
-            <Testimoni testimonis={discounts.testimonis} />
-          </section> */}
         </div>
       </div>
     </div>
