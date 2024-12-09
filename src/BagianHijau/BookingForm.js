@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { createPesanan, fetchServiceSessions } from './controller/hijau'; // Import fungsi dari controller/hijau.js
+import { createPesanan, fetchServiceSessions } from '../controller/hijau';
 
 const BookingForm = () => {
     const [sessions, setSessions] = useState([]);
     const [formData, setFormData] = useState({
-        user_id: '', // Ambil dari autentikasi pengguna (misal melalui cookie)
+        user_id: '',
         sesi_id: '',
         tanggal: '',
         diskon: '',

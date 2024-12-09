@@ -2,35 +2,50 @@ import React, { useEffect, useState } from "react";
 import { Star } from "lucide-react";
 import { FaUserCircle, FaStar, FaRegStar } from "react-icons/fa";
 import { useParams } from "react-router-dom";
-import { fetchSubcategoryDetails } from "./controller/hijau";
+import { fetchSubcategoryDetails, joinSubcategory, checkWorkerMembership } from "../controller/hijau";
 import { useCookies } from "react-cookie";
 
 const SubCategoryDetail = () => {
-    const { id } = useParams(); // Ambil ID subkategori dari URL
-    const [cookies] = useCookies(["role"]); // Gunakan cookie untuk mendapatkan role
-    const [subcategory, setSubcategory] = useState(null); // Detail subkategori
-    const [testimonis, setTestimonis] = useState([]); // Data testimoni
-    const [loading, setLoading] = useState(true); // Status loading
-    const [error, setError] = useState(null); // Status error
+    const { id } = useParams(); // Subcategory ID
+    const [cookies] = useCookies(['userId', 'status', 'name']);
+    const [subcategory, setSubcategory] = useState(null); // Subcategory details
+    const [testimonis, setTestimonis] = useState([]); // Testimonies
+    const [loading, setLoading] = useState(true); // Loading state
+    const [error, setError] = useState(null); // Error state
+    const [isMember, setIsMember] = useState(false); // Membership state
 
-    const isWorker = cookies.role === "pekerja"; // Periksa apakah role adalah pekerja
+    const isWorker = cookies.status === "pekerja"; // Check role
 
     useEffect(() => {
-        // Fetch data subkategori dari backend
         const fetchData = async () => {
             try {
                 const data = await fetchSubcategoryDetails(id);
                 setSubcategory(data);
                 setTestimonis(data.testimonis || []);
+
+                if (isWorker) {
+                    const membership = await checkWorkerMembership(cookies.userId, id);
+                    setIsMember(membership.isMember);
+                }
             } catch (error) {
-                setError("Gagal memuat data subkategori.");
+                setError("Failed to load subcategory data.");
             } finally {
                 setLoading(false);
             }
         };
 
         fetchData();
-    }, [id]);
+    }, [id, cookies.userId, isWorker]);
+
+    const handleJoin = async () => {
+        try {
+            await joinSubcategory({ worker_id: cookies.userId, subcategory_id: id });
+            setIsMember(true);
+            alert("You have successfully joined this subcategory!");
+        } catch (error) {
+            alert("Failed to join subcategory. Please try again.");
+        }
+    };
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
@@ -38,7 +53,6 @@ const SubCategoryDetail = () => {
     return (
         <div className="max-w-4xl mx-auto p-6 space-y-6 mt-16">
             <div className="bg-white rounded-lg shadow-md p-6 space-y-6">
-                {/* Header Section */}
                 <div className="grid grid-cols-2 gap-4">
                     <input
                         type="text"
@@ -54,16 +68,14 @@ const SubCategoryDetail = () => {
                     />
                 </div>
 
-                {/* Description */}
                 <textarea
                     value={subcategory.description}
                     className="w-full border rounded-md p-3 h-24"
                     readOnly
                 />
 
-                {/* Service Sessions */}
                 <div className="space-y-4">
-                    <h3 className="font-semibold text-lg">Pilihan Sesi Layanan</h3>
+                    <h3 className="font-semibold text-lg">Service Sessions</h3>
                     {subcategory.services.map((service, index) => (
                         <div
                             key={index}
@@ -87,9 +99,8 @@ const SubCategoryDetail = () => {
                     ))}
                 </div>
 
-                {/* Workers */}
                 <div className="space-y-4">
-                    <h3 className="font-semibold text-lg">Pekerja</h3>
+                    <h3 className="font-semibold text-lg">Workers</h3>
                     <div className="grid grid-cols-4 gap-4">
                         {subcategory.workers.map((worker, index) => (
                             <div
@@ -108,16 +119,17 @@ const SubCategoryDetail = () => {
                     </div>
                 </div>
 
-                {/* Button Join (Only for Workers) */}
-                {isWorker && (
-                    <button className="w-full bg-green-600 text-white py-3 rounded-md hover:bg-green-700">
+                {isWorker && !isMember && (
+                    <button
+                        onClick={handleJoin}
+                        className="w-full bg-green-600 text-white py-3 rounded-md hover:bg-green-700"
+                    >
                         Bergabung
                     </button>
                 )}
 
-                {/* Testimonials */}
                 <div className="space-y-4">
-                    <h3 className="font-semibold text-lg">Testimoni Pelanggan</h3>
+                    <h3 className="font-semibold text-lg">Customer Testimonials</h3>
                     <div className="space-y-6">
                         {testimonis.length > 0 ? (
                             testimonis.map((testimoni, index) => (
@@ -146,7 +158,7 @@ const SubCategoryDetail = () => {
                                 </div>
                             ))
                         ) : (
-                            <p className="text-gray-700">Belum ada testimoni.</p>
+                            <p className="text-gray-700">No testimonials yet.</p>
                         )}
                     </div>
                 </div>

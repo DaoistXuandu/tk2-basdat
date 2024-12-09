@@ -14,12 +14,11 @@ import PekerjaanJasa from './merah/PekerjaanJasa';
 import StatusPekerjaanJasa from './merah/StatusPekerjaanJasa';
 import DiscountPage from './components/Discounts/DiscountPage';
 import ViewPemesananJasa from './BagianHijau/ViewPemesananJasa';
-import SubCategoryDetailUser from './BagianHijau/SubCategoryDetailPengguna';
-import SubCategoryDetailWorker from './BagianHijau/SubCategoryDetailPekerja';
 import WorkerProfile from './components/profile';
 import FormTestimoni from './components/Testimoni/FormTestimoni';
 import { useCookies } from 'react-cookie'
 import Logout from './components/logout';
+import SubCategoryDetail from './BagianHijau/SubCategoryDetail';
 
 function App() {
   const role = ["Pekerja", "Pengguna", ""]
@@ -36,12 +35,8 @@ function App() {
         <Route path="logout" element={<Logout />} />
 
         <Route path="homepage" element={<Homepage role={cookies.status} />} />
-        {
-          cookies.status == "Pengguna" ?
-            <Route path="homepage/:id" element={<SubCategoryDetailUser />} />
-            :
-            <Route path="homepage/:id" element={<SubCategoryDetailWorker />} />
-        }
+        <Route path="homepage/:id/form" element={<SubCategoryDetail />} />
+
         <Route path="homepage/:id/form" element={<BookingForm />} />
 
         <Route path="mypay" element={<MyPay />} />

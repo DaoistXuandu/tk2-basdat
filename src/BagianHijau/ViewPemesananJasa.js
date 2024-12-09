@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchOrders } from "./controller/hijau"; // Import API
+import { fetchOrders } from "../controller/hijau"; // Import API
 import { useCookies } from "react-cookie";
 
 const ViewPemesananJasa = () => {
