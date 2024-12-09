@@ -5,6 +5,7 @@ import { getUser, updateUser, uploadImage } from "../controller/kuning";
 export default function Profile({ role }) {
     const [cookies, setCookie] = useCookies(['userId', 'status', 'name'])
     const [update, setUpdate] = useState(false);
+    const [message, setMessage] = useState(["Awal", "green"])
 
     const [name, setName] = useState("")
     const [sex, setSex] = useState("")
@@ -20,6 +21,7 @@ export default function Profile({ role }) {
     const [rating, setRating] = useState()
     const [amount, setAmount] = useState()
     const [category, setCategory] = useState([])
+    const [wait, setWait] = useState(false)
 
     const data = [
         ["Nama", name],
@@ -60,11 +62,16 @@ export default function Profile({ role }) {
         var fReader = new FileReader();
         fReader.readAsDataURL(input.files[0]);
         fReader.onloadend = async function (event) {
+            setWait(true)
+            let pesan = ["Gambar sedang diupload", 'green']
+            setMessage(pesan)
+
             var data = event.target.result.split(",")
             const value = await uploadImage(data[data.length - 1])
             let current_link = value.data.display_url
             alert("Gambar Berhasil Terunggah")
             setLink(current_link)
+            setWait(false)
         }
     }
 
@@ -142,6 +149,28 @@ export default function Profile({ role }) {
     }
 
     async function handleUpdate() {
+        setWait(true)
+        let pesan = ["Update sedang diproses", 'green']
+        setMessage(pesan)
+
+        if (number.length == 0) {
+            alert("Nomor Telpon tidak boleh nol")
+            setWait(false)
+            return
+        }
+
+        if (number[0] != '0') {
+            alert("Nomor telepon harus valid")
+            setWait(false)
+            return
+        }
+
+        if (new Date(Date.now()) < new Date(date)) {
+            alert("Tanggal tidak boleh lebih dari sekarang")
+            setWait(false)
+            return
+        }
+
         const role = (cookies.status == "Pekerja" ? 1 : 0)
         const data = await updateUser(
             cookies.userId,
@@ -164,6 +193,7 @@ export default function Profile({ role }) {
         else {
             alert(data.message)
         }
+        setWait(false)
     }
 
 
@@ -172,7 +202,12 @@ export default function Profile({ role }) {
     }, [cookies.userId])
 
     return (
-        <div>
+        <div className="relative">
+            <div className={`fixed ${wait ? '' : 'hidden'} bottom-20 left-20 bg-green-600 z-200 p-3 pl-6 pr-6 text-left rounded-xl shadow-lg text-white w-fit`}>
+                <h1 className="text-2xl font-bold">Pesan:</h1>
+                {message[0]}
+            </div>
+
             <div className="mt-10 h-screen w-full flex justify-center items-center flex flex-row gap-3">
                 <div className="bg-white shadow-lg p-10 border border-1 rounded-lg flex flex-col gap-3">
                     <div className="font-bold text-3xl">Profile</div>
@@ -220,7 +255,7 @@ export default function Profile({ role }) {
                                     ))
                                 }
                             </div>
-                            <button onClick={handleUpdate} className="hover:scale-95 rounded-lg bg-green-600 p-2 font-bold text-white text-xl">Update Profil</button>
+                            <button onClick={handleUpdate} disabled={wait} className={`hover:scale-95 rounded-lg p-2 font-bold text-white text-xl ${wait ? 'bg-gray-200' : 'bg-green-600'}`}>Update Profil</button>
                         </div>
                     </div>
                 </div>

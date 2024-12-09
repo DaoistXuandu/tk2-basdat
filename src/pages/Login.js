@@ -5,6 +5,8 @@ import { login } from "../controller/kuning";
 
 export default function LogIn() {
     const [cookies, setCookie] = useCookies(['userId', 'status', 'name'])
+    const [wait, setWait] = useState(false)
+    const [message, setMessage] = useState(["Awal", "green"])
     const role = ["Pekerja", "Pengguna", ""]
 
 
@@ -12,10 +14,14 @@ export default function LogIn() {
     const [password, setPassword] = useState("")
 
     async function handleSubmit(e) {
+        setWait(true)
+        let pesan = ["Sedang dilakukan pemrosesan", 'green']
+        setMessage(pesan)
         e.preventDefault()
 
         if (noHp == "" || password == "") {
             alert("No Hp atau Password tidak boleh kosong")
+            setWait(false)
             return
         }
 
@@ -36,10 +42,15 @@ export default function LogIn() {
         else {
             alert(response.message)
         }
+        setWait(false)
     }
 
     return (
-        <div className="flex h-screen justify-center items-center">
+        <div className="flex h-screen justify-center items-center relative z-0">
+            <div className={`fixed ${wait ? '' : 'hidden'} bottom-20 left-20 bg-green-600 z-200 p-3 pl-6 pr-6 text-left rounded-xl shadow-lg text-white w-fit`}>
+                <h1 className="text-2xl font-bold">Pesan:</h1>
+                {message[0]}
+            </div>
             <form className="flex flex-col justify-center w-fit p-8 gap-12 bg-white shadow-lg border border-1 rounded-xl">
                 <p className="font-bold text-3xl text-center">Log In</p>
                 <div className="flex flex-col justify-center w-full gap-3">
@@ -62,7 +73,7 @@ export default function LogIn() {
                     </div>
                 </div>
 
-                <button onClick={e => handleSubmit(e)} className="bg-green-600 p-3 rounded-lg text-white font-bold text-lg hover:scale-95">Masuk</button>
+                <button disabled={wait} onClick={e => handleSubmit(e)} className={`p-3 rounded-lg text-white font-bold text-lg ${wait ? 'bg-gray-200' : 'bg-green-600'}`}>Masuk</button>
             </form>
         </div >
 
