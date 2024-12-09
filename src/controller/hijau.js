@@ -55,6 +55,7 @@ async function fetchOrders(userId) {
 async function fetchHomepage() {
     try {
         const response = await fetch(`${PORT}/homepage`);
+        console.log(response)
         if (!response.ok) throw new Error('Failed to fetch homepage data');
         return await response.json();
     } catch (error) {

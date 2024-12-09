@@ -124,24 +124,24 @@ export default function TransaksiMyPay() {
   const handlePaymentSubmit = async (e) => {
     e.preventDefault(); // Prevent form's default submission behavior
     setWait(true); // Indicate processing state
-  
+
     if (!selectedServiceId) {
       alert('Silakan pilih jasa untuk pembayaran.');
       setWait(false); // Reset wait state
       return;
     }
-  
+
     try {
       const userId = cookies.userId;
-  
+
       // Send payment request
       const response = await processPayment(userId, selectedServiceId);
-  
+
       if (!response.status) {
         alert(response.message || 'Pembayaran gagal.');
       } else {
         alert('Pembayaran berhasil dilakukan.');
-  
+
         // Fetch updated balance
         const balanceData = await getMyPayBalance(userId, cookies.status === 'Pengguna' ? 0 : 1);
         if (balanceData) {
@@ -150,7 +150,7 @@ export default function TransaksiMyPay() {
             balance: balanceData.balance,
           }));
         }
-  
+
         // Fetch updated unpaid services
         const ordersData = await getPesananJasa(userId);
         if (ordersData.status) {
@@ -167,7 +167,7 @@ export default function TransaksiMyPay() {
       setWait(false); // Reset wait state
     }
   };
-  
+
 
   async function handleTransfer(e) {
     e.preventDefault()
@@ -244,34 +244,34 @@ export default function TransaksiMyPay() {
           </div>
         );
 
-        case 'payment':
-          return (
-            <form className="form-state" onSubmit={handlePaymentSubmit}>
-              <h3>Pembayaran Jasa</h3>
-              <div className="form-group">
-                <label>Pesanan Jasa:</label>
-                <select onChange={handleServiceChange} value={selectedServiceId}>
-                  <option value="">Pilih Jasa</option>
-                  {(services || []).map(service => (
-                    <option key={service.id} value={service.id}>
-                      {service.nama_jasa} (Sesi: {service.sesi}) - {formatIDR(service.total_biaya)}
-                    </option>
-                  ))}
-                </select>
-                <div className="price-display">
-                  Harga Jasa: {formatIDR(selectedServicePrice)}
-                </div>
-                <button
-                  type="submit"
-                  className="submit-button"
-                  disabled={wait}
-                >
-                  {wait ? 'Memproses...' : 'Bayar'}
-                </button>
+      case 'payment':
+        return (
+          <form className="form-state" onSubmit={handlePaymentSubmit}>
+            <h3>Pembayaran Jasa</h3>
+            <div className="form-group">
+              <label>Pesanan Jasa:</label>
+              <select onChange={handleServiceChange} value={selectedServiceId}>
+                <option value="">Pilih Jasa</option>
+                {(services || []).map(service => (
+                  <option key={service.id} value={service.id}>
+                    {service.nama_jasa} (Sesi: {service.sesi}) - {formatIDR(service.total_biaya)}
+                  </option>
+                ))}
+              </select>
+              <div className="price-display">
+                Harga Jasa: {formatIDR(selectedServicePrice)}
               </div>
-            </form>
-          );
-        
+              <button
+                type="submit"
+                className="submit-button"
+                disabled={wait}
+              >
+                {wait ? 'Memproses...' : 'Bayar'}
+              </button>
+            </div>
+          </form>
+        );
+
       case 'transfer':
         return (
           <form className="form-state">

@@ -36,18 +36,8 @@ const StatusPekerjaanJasa = () => {
     "Pesanan Dibatal"
   ]
 
-  const STATUS_MAP = {
-    "": 0,
-    "Menunggu Pekerja Berangkat": 3,
-    "Pekerja Tiba Di Lokasi": 4,
-    "Pelayanan Jasa Sedang Dilakukan": 5,
-    "Pesanan Selesai": 6,
-    "Pesanan Dibatal": 7
-  }
-
-
   async function getData() {
-    const data = await getCurrentJob(cookies.userId, STATUS_MAP[selectedStatus], searchQuery)
+    const data = await getCurrentJob(cookies.userId)
     if (data.status) {
       let current_value = []
       if (data.pekerjaan != null) {
@@ -106,7 +96,6 @@ const StatusPekerjaanJasa = () => {
   };
 
   const handleSearch = (currentList = pesananList) => {
-    getData()
     const filtered = currentList.filter((pesanan) => {
       const statusMatch = !selectedStatus || pesanan.status === selectedStatus;
       const queryMatch = !searchQuery ||
@@ -125,7 +114,6 @@ const StatusPekerjaanJasa = () => {
     }).format(amount);
   };
 
-
   const renderStatusButton = (pesanan) => {
     const statusConfig = STATUS_FLOW[pesanan.status];
     if (!statusConfig) return null;
@@ -139,10 +127,6 @@ const StatusPekerjaanJasa = () => {
       </button>
     );
   };
-
-  useEffect(() => {
-    console.log(selectedStatus)
-  }, [selectedStatus])
 
   return (
     <div className="container">
