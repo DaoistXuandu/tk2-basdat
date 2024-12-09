@@ -68,28 +68,33 @@ const SubCategoryDetail = () => {
                 {/* Rest of the component remains the same */}
                 <div className="space-y-4">
                     <h3 className="font-semibold text-lg">Service Sessions</h3>
-                    {subcategory.services.map((service, index) => (
-                        <div
-                            key={index}
-                            className="flex items-center justify-between border rounded-md p-4"
-                        >
-                            <div className="flex-1">
-                                <span className="font-medium">{service.name}</span>
-                                <span className="ml-4 text-gray-600">
-                                    Rp {service.price.toLocaleString("id-ID")}
-                                </span>
+                    {subcategory.services && subcategory.services.length > 0 ? (
+                        subcategory.services.map((service, index) => (
+                            <div
+                                key={index}
+                                className="flex items-center justify-between border rounded-md p-4"
+                            >
+                                <div className="flex-1">
+                                    <span className="font-medium">{service.name || 'Unnamed Service'}</span>
+                                    <span className="ml-4 text-gray-600">
+                                        Rp {service.price ? service.price.toLocaleString("id-ID") : 'N/A'}
+                                    </span>
+                                </div>
+                                {!isWorker && (
+                                    <button
+                                        onClick={() => handleBooking(service.id)}
+                                        className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                                    >
+                                        Pesan
+                                    </button>
+                                )}
                             </div>
-                            {!isWorker && (
-                                <button
-                                    onClick={() => handleBooking(service.id)}
-                                    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-                                >
-                                    Pesan
-                                </button>
-                            )}
-                        </div>
-                    ))}
+                        ))
+                    ) : (
+                        <p className="text-gray-600">No services available for this subcategory.</p>
+                    )}
                 </div>
+
                 {/* Rest of the component remains the same */}
             </div>
         </div>
