@@ -47,7 +47,7 @@ async function createPesanan(data) {
 
 async function fetchSubcategoryDetails(subcategoryId) {
     try {
-        const response = await fetchWithTimeout(`${PORT}/subcategory-detail?id=${subcategoryId}`);
+        const response = await fetchWithTimeout(`${PORT}/homepage?id=${subcategoryId}`);
         if (!response.ok) throw new Error(`Failed to fetch subcategory details: ${response.status}`);
         const data = await response.json();
         
