@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-// import { fetchOrders } from "./controller/hijau"; // Import API
+import { fetchOrders } from "../controller/hijau";
+import { deleteTestimoni } from "../controller/biru"; // Tambahkan API deleteTestimoni
 import { useCookies } from "react-cookie";
 
 const ViewPemesananJasa = () => {
@@ -14,9 +15,9 @@ const ViewPemesananJasa = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // const data = await fetchOrders(cookies.userId);
-        // setOrders(data);
-        // setFilteredOrders(data); // Set default filtered orders
+        const data = await fetchOrders(cookies.userId);
+        setOrders(data);
+        setFilteredOrders(data); // Set default filtered orders
       } catch (error) {
         setError("Gagal memuat data pemesanan.");
       } finally {
@@ -47,6 +48,22 @@ const ViewPemesananJasa = () => {
       );
     }
     setFilteredOrders(filtered);
+  };
+
+  // Handle delete testimoni
+  const handleDeleteTestimoni = async (order) => {
+    try {
+      const response = await deleteTestimoni(cookies.userId, order.id, new Date().toISOString()); // Panggil API delete testimoni
+      alert(response); // Menampilkan pesan dari backend
+      // Update status testimoni di UI
+      const updatedOrders = orders.map((item) =>
+        item.id === order.id ? { ...item, sudahMemberikanTestimoni: false } : item
+      );
+      setOrders(updatedOrders);
+      setFilteredOrders(updatedOrders);
+    } catch (error) {
+      alert("Terjadi kesalahan saat menghapus testimoni.");
+    }
   };
 
   if (loading) return <div>Loading...</div>;
@@ -117,6 +134,14 @@ const ViewPemesananJasa = () => {
                     className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 w-full"
                   >
                     Buat Testimoni
+                  </button>
+                ) : pesanan.status === "Pesanan Selesai" &&
+                  pesanan.sudahMemberikanTestimoni ? (
+                  <button
+                    onClick={() => handleDeleteTestimoni(pesanan)}
+                    className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 w-full"
+                  >
+                    Hapus Testimoni
                   </button>
                 ) : null}
               </div>

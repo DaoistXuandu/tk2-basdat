@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
-// import { fetchHomepage } from './controller/hijau';
+import { fetchHomepage } from '../controller/hijau';
 
 const Homepage = () => {
     const [categories, setCategories] = useState([]);

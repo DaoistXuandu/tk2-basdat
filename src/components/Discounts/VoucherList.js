@@ -1,8 +1,8 @@
-// src/components/VoucherList.jsx
-
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { FaCheckCircle, FaTimesCircle, FaTag } from 'react-icons/fa';
+import { useCookies } from 'react-cookie';
+import { buyVoucher } from '../../controller/biru'; // Import fungsi buyVoucher dari controller
 
 const VoucherList = ({ vouchers }) => {
   const [modal, setModal] = useState({
@@ -10,33 +10,51 @@ const VoucherList = ({ vouchers }) => {
     title: '',
     message: '',
   });
+  const [loadingVoucher, setLoadingVoucher] = useState(null);
+  const [cookies] = useCookies(['status', 'userId']);
+  const userId = cookies.userId;
+  const userStatus = cookies.status;
 
   // Fungsi untuk memformat angka menjadi format uang
-  const formatCurrency = (priceString) => {
-    const number = parseInt(priceString.replace(/[^0-9]/g, ''), 10);
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(number);
-  };
+  const formatCurrency = (price) =>
+    new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(price);
 
   // Fungsi untuk menangani pembelian voucher
-  const handleBuyVoucher = (voucher) => {
-    const voucherPrice = parseInt(voucher.price.replace(/[^0-9]/g, ''), 10);
-
-    // Simulasi saldo pengguna
-    const userBalance = 10000; // Anda dapat menggantinya dengan saldo aktual pengguna
-
-    if (userBalance >= voucherPrice) {
+  const handleBuyVoucher = async (voucherCode) => {
+    if (userStatus !== 'Pengguna') {
       setModal({
         isVisible: true,
-        title: 'SUKSES',
-        message: `Selamat! Anda berhasil membeli voucher kode ${voucher.code}. Voucher ini akan berlaku hingga tanggal XX/XX/XXXX dengan kuota penggunaan sebanyak ${voucher.usageQuota} kali.`,
+        title: 'Akses Ditolak',
+        message: 'Hanya pengguna dengan status "Pengguna" yang dapat membeli voucher.',
       });
-      // Implementasikan logika pengurangan saldo dan pembelian voucher di sini
-    } else {
+      return;
+    }
+
+    setLoadingVoucher(voucherCode); // Menandai voucher sedang diproses
+    try {
+      const response = await buyVoucher(userId, voucherCode); // Panggil fungsi buyVoucher
+      if (response.status) {
+        setModal({
+          isVisible: true,
+          title: 'SUKSES',
+          message: `Selamat! Anda berhasil membeli voucher dengan kode ${voucherCode}.`,
+        });
+      } else {
+        setModal({
+          isVisible: true,
+          title: 'GAGAL',
+          message: response.message,
+        });
+      }
+    } catch (error) {
       setModal({
         isVisible: true,
-        title: 'GAGAL',
-        message: 'Maaf, saldo Anda tidak cukup untuk membeli voucher ini.',
+        title: 'ERROR',
+        message: 'Terjadi kesalahan dalam proses pembelian voucher.',
       });
+      console.error(error);
+    } finally {
+      setLoadingVoucher(null); // Reset loading state
     }
   };
 
@@ -49,22 +67,40 @@ const VoucherList = ({ vouchers }) => {
     <div>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {vouchers.map((voucher) => (
-          <div key={voucher.code} className="p-6 border rounded-lg shadow-md bg-white hover:shadow-lg transition-shadow duration-300">
+          <div
+            key={voucher.kode}
+            className="p-6 border rounded-lg shadow-md bg-white hover:shadow-lg transition-shadow duration-300"
+          >
             <div className="flex items-center mb-4">
               <FaTag className="text-indigo-500 text-2xl mr-2" />
-              <h4 className="text-xl font-bold text-indigo-600">{voucher.code}</h4>
+              <h4 className="text-xl font-bold text-indigo-600">{voucher.kode}</h4>
             </div>
-            <p className="text-green-500 font-semibold text-lg">{voucher.discount} OFF</p>
-            <p className="text-gray-600">Min Transaksi: {voucher.minTransaction}</p>
-            <p className="text-gray-600">Berlaku: {voucher.validDays} hari</p>
-            <p className="text-gray-600">Kuota: {voucher.usageQuota} kali</p>
-            <p className="text-lg font-semibold text-red-500">Harga: {formatCurrency(voucher.price)}</p>
+            <p className="text-green-500 font-semibold text-lg">
+              Potongan: {formatCurrency(voucher.potongan)}
+            </p>
+            <p className="text-gray-600">Min Transaksi: {formatCurrency(voucher.minTrPemesanan)}</p>
+            <p className="text-gray-600">Berlaku: {voucher.jmlHariBerlaku} hari</p>
+            <p className="text-gray-600">Kuota: {voucher.kuotaPenggunaan} kali</p>
+            <p className="text-lg font-semibold text-red-500">Harga: {formatCurrency(voucher.harga)}</p>
             <button
-              onClick={() => handleBuyVoucher(voucher)}
-              className="mt-4 w-full px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 flex items-center justify-center transition-colors duration-300"
+              onClick={() => handleBuyVoucher(voucher.kode)}
+              disabled={loadingVoucher === voucher.kode || userStatus !== 'Pengguna'}
+              className={`mt-4 w-full px-4 py-2 rounded flex items-center justify-center transition-colors duration-300 ${
+                loadingVoucher === voucher.kode
+                  ? 'bg-gray-400 text-gray-700'
+                  : userStatus !== 'Pengguna'
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-indigo-600 text-white hover:bg-indigo-700'
+              }`}
             >
-              <FaCheckCircle className="mr-2" />
-              Beli
+              {loadingVoucher === voucher.kode ? (
+                <span>Loading...</span>
+              ) : (
+                <>
+                  <FaCheckCircle className="mr-2" />
+                  {userStatus !== 'Pengguna' ? 'Tidak Tersedia' : 'Beli'}
+                </>
+              )}
             </button>
           </div>
         ))}
@@ -74,7 +110,6 @@ const VoucherList = ({ vouchers }) => {
       {modal.isVisible && (
         <div
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-          aria-labelledby="modal-title"
           role="dialog"
           aria-modal="true"
         >
@@ -85,9 +120,7 @@ const VoucherList = ({ vouchers }) => {
               ) : (
                 <FaTimesCircle className="text-red-500 text-3xl mr-2" />
               )}
-              <h2 id="modal-title" className="text-2xl font-bold">
-                {modal.title}
-              </h2>
+              <h2 className="text-2xl font-bold">{modal.title}</h2>
             </div>
             <p className="mb-6">{modal.message}</p>
             <button
@@ -106,12 +139,12 @@ const VoucherList = ({ vouchers }) => {
 VoucherList.propTypes = {
   vouchers: PropTypes.arrayOf(
     PropTypes.shape({
-      code: PropTypes.string.isRequired,
-      discount: PropTypes.string.isRequired,
-      minTransaction: PropTypes.string.isRequired,
-      validDays: PropTypes.string.isRequired,
-      usageQuota: PropTypes.string.isRequired,
-      price: PropTypes.string.isRequired,
+      kode: PropTypes.string.isRequired,
+      potongan: PropTypes.number.isRequired,
+      minTrPemesanan: PropTypes.number.isRequired,
+      jmlHariBerlaku: PropTypes.number.isRequired,
+      kuotaPenggunaan: PropTypes.number.isRequired,
+      harga: PropTypes.number.isRequired,
     })
   ).isRequired,
 };

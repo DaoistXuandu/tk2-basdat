@@ -28,7 +28,6 @@ async function createPesanan(data) {
     }
 }
 
-// Fetch subcategory details
 async function fetchSubcategoryDetails(subcategoryId) {
     try {
         const response = await fetch(`${PORT}/subcategory-detail?id=${subcategoryId}`);
@@ -52,4 +51,45 @@ async function fetchOrders(userId) {
 }
 
 
-export { fetchServiceSessions, createPesanan, fetchOrders };
+// Fetch homepage data
+async function fetchHomepage() {
+    try {
+        const response = await fetch(`${PORT}/homepage`);
+        if (!response.ok) throw new Error('Failed to fetch homepage data');
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching homepage data:', error);
+        throw error;
+    }
+}
+
+async function joinSubcategory(data) {
+    try {
+        const response = await fetch(`${PORT}/join-subcategory`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        if (!response.ok) throw new Error('Failed to join subcategory');
+        return await response.json();
+    } catch (error) {
+        console.error('Error joining subcategory:', error);
+        throw error;
+    }
+}
+
+async function checkWorkerMembership(workerId, subcategoryId) {
+    try {
+        const response = await fetch(
+            `${PORT}/check-worker-membership?worker_id=${workerId}&subcategory_id=${subcategoryId}`
+        );
+        if (!response.ok) throw new Error('Failed to check membership');
+        return await response.json();
+    } catch (error) {
+        console.error('Error checking membership:', error);
+        throw error;
+    }
+}
+
+
+export { fetchServiceSessions, createPesanan, fetchSubcategoryDetails, fetchOrders, fetchHomepage, joinSubcategory, checkWorkerMembership };

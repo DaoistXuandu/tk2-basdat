@@ -1,48 +1,53 @@
-// src/components/FormTestimoni.jsx
-
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { FaStar, FaRegStar } from 'react-icons/fa';
+import { useCookies } from 'react-cookie';
+import { createTestimoni } from '../../controller/biru';
 
 const FormTestimoni = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [cookies] = useCookies(['userId']);
+  const userId = cookies.userId;
+
+  // Pastikan `pemesananId` diambil dari query parameter atau lokasi lainnya
+  const pemesananId = location.state?.pemesananId || '';
 
   // State untuk input form
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
   // Handler untuk submit form
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (rating === 0 || message.trim() === '') {
       alert('Mohon isi rating dan komentar Anda.');
       return;
     }
+    if (!pemesananId) {
+      alert('Pemesanan ID tidak tersedia.');
+      return;
+    }
 
-    // Ambil testimonial yang sudah ada dari LocalStorage
-    const storedTestimonis = JSON.parse(localStorage.getItem('testimonis')) || [];
+    setLoading(true);
 
-    // Buat testimonial baru
-    const newTestimoni = {
-      name: 'Anda', // Anda bisa mengganti ini dengan nama pengguna yang sebenarnya
-      rating,
-      message,
-    };
-
-    // Tambahkan testimonial baru ke array
-    const updatedTestimonis = [...storedTestimonis, newTestimoni];
-
-    // Simpan ke LocalStorage
-    localStorage.setItem('testimonis', JSON.stringify(updatedTestimonis));
-
-    // Reset form
-    setRating(0);
-    setHoverRating(0);
-    setMessage('');
-
-    // Navigasi kembali ke halaman Testimoni
-    navigate('/testimoni');
+    try {
+      const response = await createTestimoni(userId, pemesananId, message.trim(), rating);
+      alert(`Testimoni berhasil dibuat: ${response}`);
+      // Reset form
+      setRating(0);
+      setHoverRating(0);
+      setMessage('');
+      // Navigasi kembali ke halaman Testimoni
+      navigate('/testimoni');
+    } catch (error) {
+      alert('Terjadi kesalahan saat membuat testimoni. Silakan coba lagi.');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Fungsi untuk merender bintang
@@ -80,24 +85,21 @@ const FormTestimoni = () => {
     setRating(0);
     setHoverRating(0);
     setMessage('');
-
-    // Navigasi kembali ke halaman Testimoni
-    navigate('/testimoni');
+    // Navigasi ke halaman View Pemesanan Jasa
+    navigate('/viewPemesananJasa');
   };
 
   return (
     <div className="container mx-auto p-6">
-      <br></br>
-      <br></br>
-      <br></br>
+      <br />
+      <br />
+      <br />
       <div className="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
         <h2 className="text-2xl font-bold mb-4">Form Komentar</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">Rating (1-10):</label>
-            <div className="flex">
-              {renderStars()}
-            </div>
+            <div className="flex">{renderStars()}</div>
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="message">
@@ -115,14 +117,19 @@ const FormTestimoni = () => {
           <div className="flex justify-end">
             <button
               type="submit"
-              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors duration-300 mr-2"
+              disabled={loading}
+              className={`px-4 py-2 rounded ${
+                loading
+                  ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                  : 'bg-green-600 text-white hover:bg-green-700 transition-colors duration-300'
+              }`}
             >
-              Submit
+              {loading ? 'Loading...' : 'Submit'}
             </button>
             <button
               type="button"
               onClick={handleCancel}
-              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors duration-300"
+              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors duration-300 ml-2"
             >
               Batal
             </button>

@@ -122,40 +122,52 @@ export default function TransaksiMyPay() {
   }
 
   const handlePaymentSubmit = async (e) => {
-    e.preventDefault();
-    setWait()
-    // Validasi jika tidak ada jasa yang dipilih
+    e.preventDefault(); // Prevent form's default submission behavior
+    setWait(true); // Indicate processing state
+  
     if (!selectedServiceId) {
       alert('Silakan pilih jasa untuk pembayaran.');
+      setWait(false); // Reset wait state
       return;
     }
-
+  
     try {
       const userId = cookies.userId;
-
-      // Kirim request pembayaran
+  
+      // Send payment request
       const response = await processPayment(userId, selectedServiceId);
-
-      // Menangani respon dari server
+  
       if (!response.status) {
-        alert(response.message);
+        alert(response.message || 'Pembayaran gagal.');
       } else {
-        alert('Pembayaran berhasil dilakukan');
-
-        // Fetch balance terbaru setelah pembayaran
+        alert('Pembayaran berhasil dilakukan.');
+  
+        // Fetch updated balance
         const balanceData = await getMyPayBalance(userId, cookies.status === 'Pengguna' ? 0 : 1);
         if (balanceData) {
-          setUserData((prevData) => ({
-            ...prevData,
+          setUserData(prev => ({
+            ...prev,
             balance: balanceData.balance,
           }));
         }
+  
+        // Fetch updated unpaid services
+        const ordersData = await getPesananJasa(userId);
+        if (ordersData.status) {
+          setServices(ordersData.pesanan);
+
+          // Reset the selected service
+          // setSelectedServiceId('');
+          setSelectedServicePrice(0); // Reset "Harga Jasa"
+        }
       }
     } catch (error) {
-      // Tangani error apabila ada
       alert('Terjadi kesalahan saat memproses pembayaran.');
+    } finally {
+      setWait(false); // Reset wait state
     }
   };
+  
 
   async function handleTransfer(e) {
     e.preventDefault()
@@ -198,7 +210,7 @@ export default function TransaksiMyPay() {
       amount = parseFloat(amount)
     }
     catch (err) {
-      alert("Nonimal harusliah bilangan positif");
+      alert("Nominal harusliah bilangan positif");
       return;
     }
 
@@ -232,34 +244,34 @@ export default function TransaksiMyPay() {
           </div>
         );
 
-      case 'payment':
-        return (
-          <form className="form-state">
-            <h3>Pembayaran Jasa</h3>
-            <div className="form-group">
-              <label>Pesanan Jasa:</label>
-              <select onChange={handleServiceChange} value={selectedServiceId}>
-                <option value="">Pilih Jasa</option>
-                {services.map(service => (
-                  <option key={service.id} value={service.id}>
-                    {service.nama_jasa} (Sesi: {service.sesi}) - {formatIDR(service.total_biaya)}
-                  </option>
-                ))}
-              </select>
-              <div className="price-display">
-                Harga Jasa: {formatIDR(selectedServicePrice)}
+        case 'payment':
+          return (
+            <form className="form-state" onSubmit={handlePaymentSubmit}>
+              <h3>Pembayaran Jasa</h3>
+              <div className="form-group">
+                <label>Pesanan Jasa:</label>
+                <select onChange={handleServiceChange} value={selectedServiceId}>
+                  <option value="">Pilih Jasa</option>
+                  {(services || []).map(service => (
+                    <option key={service.id} value={service.id}>
+                      {service.nama_jasa} (Sesi: {service.sesi}) - {formatIDR(service.total_biaya)}
+                    </option>
+                  ))}
+                </select>
+                <div className="price-display">
+                  Harga Jasa: {formatIDR(selectedServicePrice)}
+                </div>
+                <button
+                  type="submit"
+                  className="submit-button"
+                  disabled={wait}
+                >
+                  {wait ? 'Memproses...' : 'Bayar'}
+                </button>
               </div>
-              <button
-                className="submit-button"
-                onClick={handlePaymentSubmit}
-                disabled={wait}
-              >
-                {wait ? 'Memproses...' : 'Bayar'}
-              </button>
-            </div>
-          </form>
-        );
-
+            </form>
+          );
+        
       case 'transfer':
         return (
           <form className="form-state">
