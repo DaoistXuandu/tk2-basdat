@@ -35,7 +35,9 @@ function App() {
         <Route path="logout" element={<Logout />} />
 
         <Route path="homepage" element={<Homepage role={cookies.status} />} />
-        <Route path="homepage/:id/form" element={<SubCategoryDetail />} />
+        <Route path="/homepage" element={<Homepage />} />
+        <Route path="/homepage/:id" element={<SubCategoryDetail />} />
+        <Route path="/" element={<Homepage />} />
 
         <Route path="homepage/:id/form" element={<BookingForm />} />
 
