@@ -64,24 +64,37 @@ export default function Register() {
             setLink(current_link)
             pesan = ["Gambar telah berhasil terunggah", 'green']
             setMessage(pesan)
+            alert("Berhasil berhasil terunggah")
             setWait(false)
         }
     }
 
     async function handleSubmit() {
+        setWait(true)
+        let pesan = ["Sedang dilakukan pemrosesan", 'green']
+        setMessage(pesan)
         if (!number || !name || !sex || !number || !password || !date || !address) {
             alert("Input data tidak boleh kosong")
+            setWait(false)
             return
         }
 
         if (role == 1 && (!bank || !rek || !npwp || !link)) {
             alert("Input data tidak boleh kosong")
+            setWait(false)
             return
         }
 
         if (number[0] != '0') {
             alert("Nomor telepon harus valid")
+            setWait(false)
             return;
+        }
+
+        if (new Date(Date.now()) < new Date(date)) {
+            alert("Tanggal tidak boleh lebih dari sekarang")
+            setWait(false)
+            return
         }
 
         let cur_number = number + (number.length > 2 && number[number.length - 2] != '.' ? '.0' : '')
@@ -112,6 +125,7 @@ export default function Register() {
         else {
             alert(data.message)
         }
+        setWait(false)
     }
 
     function input_data({ type, index }) {
@@ -192,9 +206,6 @@ export default function Register() {
                     <button onClick={handleSubmit} disabled={wait} className={`hover:scale-95 rounded-lg p-2 font-bold text-white text-x ${wait ? 'bg-gray-200' : 'bg-green-600'}`}>Register</button>
                 </div>
             </div>
-            <p>
-                {link}
-            </p>
         </div>
     )
 }

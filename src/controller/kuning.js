@@ -65,6 +65,7 @@ async function updateUser(id, role, name, sex, number, date, address, bank, noRe
         let updateDate = date + "T00:00:00Z"
         let cur_number = number + (number.length > 2 && number[number.length - 2] != '.' ? '.0' : '')
 
+
         if (cur_number[0] == '0') {
             cur_number = cur_number.substring(1, cur_number.length)
         }
