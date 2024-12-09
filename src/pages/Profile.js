@@ -57,7 +57,6 @@ export default function Profile({ role }) {
     ]
 
     async function handleUrl() {
-        console.log("fxghjkl")
         var input = document.getElementById("file");
         var fReader = new FileReader();
         fReader.readAsDataURL(input.files[0]);
@@ -65,7 +64,7 @@ export default function Profile({ role }) {
             var data = event.target.result.split(",")
             const value = await uploadImage(data[data.length - 1])
             let current_link = value.data.display_url
-            console.log(current_link)
+            alert("Gambar Berhasil Terunggah")
             setLink(current_link)
         }
     }

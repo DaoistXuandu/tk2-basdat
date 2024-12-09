@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Star } from "lucide-react";
 import { FaUserCircle, FaStar, FaRegStar } from "react-icons/fa";
 import { useParams } from "react-router-dom";
-import { fetchSubcategoryDetails } from "./controller/hijau";
 import { useCookies } from "react-cookie";
 
 const SubCategoryDetail = () => {
@@ -15,22 +14,22 @@ const SubCategoryDetail = () => {
 
     const isWorker = cookies.role === "pekerja"; // Periksa apakah role adalah pekerja
 
-    useEffect(() => {
-        // Fetch data subkategori dari backend
-        const fetchData = async () => {
-            try {
-                const data = await fetchSubcategoryDetails(id);
-                setSubcategory(data);
-                setTestimonis(data.testimonis || []);
-            } catch (error) {
-                setError("Gagal memuat data subkategori.");
-            } finally {
-                setLoading(false);
-            }
-        };
+    // useEffect(() => {
+    //     // Fetch data subkategori dari backend
+    //     const fetchData = async () => {
+    //         try {
+    //             const data = await fetchSubcategoryDetails(id);
+    //             setSubcategory(data);
+    //             setTestimonis(data.testimonis || []);
+    //         } catch (error) {
+    //             setError("Gagal memuat data subkategori.");
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     };
 
-        fetchData();
-    }, [id]);
+    //     fetchData();
+    // }, [id]);
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;

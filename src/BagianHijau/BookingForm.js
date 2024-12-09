@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { createPesanan, fetchServiceSessions } from './controller/hijau'; // Import fungsi dari controller/hijau.js
+// import { createPesanan, fetchServiceSessions } from './controller/hijau'; // Import fungsi dari controller/hijau.js
 
 const BookingForm = () => {
     const [sessions, setSessions] = useState([]);
@@ -15,18 +15,18 @@ const BookingForm = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchSessions = async () => {
-            try {
-                const data = await fetchServiceSessions(); // Ambil sesi layanan dari database
-                setSessions(data);
-            } catch (error) {
-                setMessage('Gagal memuat sesi layanan.');
-            } finally {
-                setLoading(false);
-            }
-        };
+        // const fetchSessions = async () => {
+        //     try {
+        //         const data = await fetchServiceSessions(); // Ambil sesi layanan dari database
+        //         setSessions(data);
+        //     } catch (error) {
+        //         setMessage('Gagal memuat sesi layanan.');
+        //     } finally {
+        //         setLoading(false);
+        //     }
+        // };
 
-        fetchSessions();
+        // fetchSessions();
     }, []);
 
     const handleChange = (e) => {
@@ -49,7 +49,7 @@ const BookingForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await createPesanan(formData); // Kirim data ke backend
+            // await createPesanan(formData); // Kirim data ke backend
             setMessage('Pesanan berhasil dibuat!');
         } catch (error) {
             setMessage('Gagal membuat pesanan. Coba lagi nanti.');

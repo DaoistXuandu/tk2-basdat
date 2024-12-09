@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchOrders } from "./controller/hijau"; // Import API
+// import { fetchOrders } from "./controller/hijau"; // Import API
 import { useCookies } from "react-cookie";
 
 const ViewPemesananJasa = () => {
@@ -14,9 +14,9 @@ const ViewPemesananJasa = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchOrders(cookies.userId);
-        setOrders(data);
-        setFilteredOrders(data); // Set default filtered orders
+        // const data = await fetchOrders(cookies.userId);
+        // setOrders(data);
+        // setFilteredOrders(data); // Set default filtered orders
       } catch (error) {
         setError("Gagal memuat data pemesanan.");
       } finally {

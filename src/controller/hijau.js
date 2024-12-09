@@ -52,4 +52,4 @@ async function fetchOrders(userId) {
 }
 
 
-export { fetchServiceSessions, createPesanan, fetchSubcategoryDetail, fetchOrders };
+export { fetchServiceSessions, createPesanan, fetchOrders };

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./PekerjaanJasa.css";
 import { getJobForPekerja, getKategoriAndSub, updateJobForPekerja } from "../controller/merah";
 import { useCookies } from 'react-cookie'
+import { use } from "react";
 
 const PekerjaanJasa = () => {
   const [cookies] = useCookies(['userId', 'status', 'nama']);
@@ -31,7 +32,7 @@ const PekerjaanJasa = () => {
       alert(data.message)
     }
 
-    data = await getJobForPekerja(cookies.userId);
+    data = await getJobForPekerja(cookies.userId, selectedKategori, selectedSubkategori);
     if (data.status) {
       const current_value = []
       if (data.pesanan != null) {
@@ -93,6 +94,8 @@ const PekerjaanJasa = () => {
         (pesanan) => pesanan.subkategori === selectedSubkategori
       );
     }
+
+    getInitialValue()
 
     setPesananList(filteredPesanan);
   };

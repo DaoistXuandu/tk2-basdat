@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
-import { fetchHomepage } from './controller/hijau';
+// import { fetchHomepage } from './controller/hijau';
 
 const Homepage = () => {
     const [categories, setCategories] = useState([]);
@@ -11,31 +11,31 @@ const Homepage = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const data = await fetchHomepage();
-                const categories = Array.from(
-                    new Map(data.map((item) => [item.kategori_id, { id: item.kategori_id, name: item.kategori_nama }]))
-                        .values()
-                );
-                setCategories(categories);
-                setSubCategories(
-                    data.map((item) => ({
-                        id: item.subkategori_id,
-                        categoryId: item.kategori_id,
-                        name: item.subkategori_nama,
-                        description: item.subkategori_deskripsi || '',
-                        sessions: [],
-                    }))
-                );
-            } catch (err) {
-                setError(err.message || 'Error fetching data');
-            } finally {
-                setLoading(false);
-            }
-        };
+        // const fetchData = async () => {
+        //     try {
+        //         const data = await fetchHomepage();
+        //         const categories = Array.from(
+        //             new Map(data.map((item) => [item.kategori_id, { id: item.kategori_id, name: item.kategori_nama }]))
+        //                 .values()
+        //         );
+        //         setCategories(categories);
+        //         setSubCategories(
+        //             data.map((item) => ({
+        //                 id: item.subkategori_id,
+        //                 categoryId: item.kategori_id,
+        //                 name: item.subkategori_nama,
+        //                 description: item.subkategori_deskripsi || '',
+        //                 sessions: [],
+        //             }))
+        //         );
+        //     } catch (err) {
+        //         setError(err.message || 'Error fetching data');
+        //     } finally {
+        //         setLoading(false);
+        //     }
+        // };
 
-        fetchData();
+        // fetchData();
     }, []);
 
     const filteredSubCategories = subCategories.filter((sub) =>

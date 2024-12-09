@@ -1,3 +1,4 @@
+import { useDebugValue } from "react";
 import { PORT } from "./deploy";
 
 // Controller for MyPay API calls
@@ -62,7 +63,6 @@ async function getMyPayHistory(userId, role) {
 // Handling MyPay Top-Up
 async function topUpMyPayBalance(userId, nominal, kategoriId) {
     try {
-        console.log("TEST: " + userId + " " + nominal + " " + kategoriId)
         const response = await fetch(`${PORT}/mypay/topup`, {
             method: 'POST',
             body: JSON.stringify({
@@ -257,12 +257,15 @@ async function getKategoriAndSub(id) {
 }
 
 
-async function getJobForPekerja(id) {
+async function getJobForPekerja(id, kategori, subkategori) {
     try {
+        console.log(kategori, subkategori)
         const response = await fetch(`${PORT}/jobs/available`, {
             method: 'PATCH',
             body: JSON.stringify({
-                user_id: id
+                user_id: id,
+                kategori: kategori || "",
+                subkategori: subkategori || ""
             }),
             headers: {
                 'Content-Type': 'application/json',
@@ -308,12 +311,15 @@ async function updateJobForPekerja(id, trid) {
     }
 }
 
-async function getCurrentJob(id) {
+async function getCurrentJob(id, status, name) {
+    console.log("Current: ", id, "LL: " + status, name)
     try {
         const response = await fetch(`${PORT}/jobs/job-pekerja-id`, {
             method: 'PATCH',
             body: JSON.stringify({
                 user_id: id,
+                status: status,
+                nama: name
             }),
             headers: {
                 'Content-Type': 'application/json',
@@ -326,6 +332,7 @@ async function getCurrentJob(id) {
         }
 
         const data = await response.json();
+        console.log(data)
         return data; // Success message from the API
     } catch (error) {
         console.error('Transaction failed:', error.message);
