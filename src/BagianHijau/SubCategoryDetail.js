@@ -3,13 +3,14 @@ import { Star } from "lucide-react";
 import { FaUserCircle, FaStar, FaRegStar } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import { fetchSubcategoryDetails, joinSubcategory, checkWorkerMembership } from "../controller/hijau";
+import { fetchTestimoniBySubkategori } from "../controller/biru"; // Import fungsi fetch testimoni
 import { useCookies } from "react-cookie";
 
 const SubCategoryDetail = () => {
     const { id } = useParams(); // Subcategory ID
     const [cookies] = useCookies(['userId', 'status', 'name']);
     const [subcategory, setSubcategory] = useState(null); // Subcategory details
-    const [testimonis, setTestimonis] = useState([]); // Testimonies
+    const [testimonis, setTestimonis] = useState([]); // Testimoni list
     const [loading, setLoading] = useState(true); // Loading state
     const [error, setError] = useState(null); // Error state
     const [isMember, setIsMember] = useState(false); // Membership state
@@ -19,9 +20,12 @@ const SubCategoryDetail = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const data = await fetchSubcategoryDetails(id);
-                setSubcategory(data);
-                setTestimonis(data.testimonis || []);
+                const subcategoryData = await fetchSubcategoryDetails(id);
+                setSubcategory(subcategoryData);
+
+                // Fetch testimonis by subkategori ID
+                const testimoniData = await fetchTestimoniBySubkategori(id);
+                setTestimonis(testimoniData);
 
                 if (isWorker) {
                     const membership = await checkWorkerMembership(cookies.userId, id);
