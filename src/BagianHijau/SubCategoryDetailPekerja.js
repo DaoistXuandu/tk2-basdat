@@ -2,110 +2,38 @@ import React, { useEffect, useState } from "react";
 import { Star } from "lucide-react";
 import { FaUserCircle, FaStar, FaRegStar } from "react-icons/fa";
 import { useParams } from "react-router-dom";
+import { fetchSubcategoryDetails } from "./controller/hijau";
+import { useCookies } from "react-cookie";
 
-const categories = [
-    { id: 1, name: 'Home Cleaning', description: 'Professional home cleaning services' },
-    { id: 2, name: 'Plumbing', description: 'Expert plumbing repair and installation' },
-    { id: 3, name: 'Electrical', description: 'Electrical repair and installation services' },
-];
+const SubCategoryDetail = () => {
+    const { id } = useParams(); // Ambil ID subkategori dari URL
+    const [cookies] = useCookies(["role"]); // Gunakan cookie untuk mendapatkan role
+    const [subcategory, setSubcategory] = useState(null); // Detail subkategori
+    const [testimonis, setTestimonis] = useState([]); // Data testimoni
+    const [loading, setLoading] = useState(true); // Status loading
+    const [error, setError] = useState(null); // Status error
 
-const subCategories = [
-    {
-        id: 1,
-        categoryId: 1,
-        name: 'Deep Cleaning',
-        description: 'Thorough cleaning of all rooms',
-        sessions: [
-            { id: 1, name: '2 Hours', price: 150000 },
-            { id: 2, name: '4 Hours', price: 280000 },
-        ],
-        workers: [
-            { id: 1, name: 'John Doe', rating: 4.8, completedJobs: 156 },
-            { id: 2, name: 'Jane Smith', rating: 4.9, completedJobs: 243 },
-        ],
-    },
-    {
-        id: 2,
-        categoryId: 1,
-        name: 'Basic Cleaning',
-        description: 'Standard cleaning service',
-        sessions: [
-            { id: 3, name: '2 Hours', price: 100000 },
-            { id: 4, name: '4 Hours', price: 180000 },
-        ],
-        workers: [
-            { id: 3, name: 'Mike Johnson', rating: 4.7, completedJobs: 89 },
-            { id: 4, name: 'Sarah Williams', rating: 4.6, completedJobs: 124 },
-        ],
-    },
-];
+    const isWorker = cookies.role === "pekerja"; // Periksa apakah role adalah pekerja
 
-// Dummy data untuk subkategori
-const subcategoryDataDummy = [{
-    name: "Pembersihan Acara Pernikahan",
-    category: "Deep Cleaning",
-    description:
-        "Layanan pembersihan profesional untuk pengantin dengan pengalaman lebih dari 10 tahun. Menggunakan produk premium dan tahan lama untuk hari spesial Anda.",
-    services: [
-        { name: "Paket Bersih - Bersih Pengantin Basic", price: "Rp 2.500.000" },
-        { name: "Paket Bersih - Bersih Pengantin Premium", price: "Rp 4.500.000" },
-    ],
-    workers: [
-        { name: "Sarah Amelia", rating: 4.8 },
-        { name: "Linda Wijaya", rating: 4.9 },
-        { name: "Nina Hartono", rating: 4.7 },
-        { name: "Maria Chen", rating: 4.8 },
-    ],
-},
-{
-    name: "Pembersihan Makanan",
-    category: "Basic Cleaning",
-    description:
-        "Layanan pembersihan profesional untuk noda makana",
-    services: [
-        { name: "Paket Bersih - Basic", price: "Rp 50.000" },
-        { name: "Paket Bersih - Premium", price: "Rp 100.000" },
-    ],
-    workers: [
-        { name: "Sarah Amelia", rating: 4.8 },
-        { name: "Linda Wijaya", rating: 4.9 },
-        { name: "Nina Hartono", rating: 4.7 },
-        { name: "Maria Chen", rating: 4.8 },
-    ],
-},
-];
-
-const SubCategoryDetailWorker = () => {
-    const { id } = useParams()
-    const [testimonis, setTestimonis] = useState([]);
-    const subcategoryData = subcategoryDataDummy[id - 1];
-    // Mengambil testimonial dari LocalStorage saat komponen dimount
     useEffect(() => {
-        const storedTestimonis = JSON.parse(localStorage.getItem("testimonis"));
-        if (storedTestimonis && storedTestimonis.length > 0) {
-            setTestimonis(storedTestimonis);
-        } else {
-            // Data dummy jika tidak ada testimonial di LocalStorage
-            setTestimonis([
-                {
-                    name: "Ahmad",
-                    rating: 8,
-                    message: "Layanan yang sangat memuaskan dan profesional!",
-                },
-                {
-                    name: "Siti",
-                    rating: 9,
-                    message: "Proses cepat dan hasilnya luar biasa.",
-                },
-                {
-                    name: "Budi",
-                    rating: 7,
-                    message: "Kualitas baik, tetapi pengiriman agak lambat.",
-                },
-            ]);
-        }
-    }, []);
+        // Fetch data subkategori dari backend
+        const fetchData = async () => {
+            try {
+                const data = await fetchSubcategoryDetails(id);
+                setSubcategory(data);
+                setTestimonis(data.testimonis || []);
+            } catch (error) {
+                setError("Gagal memuat data subkategori.");
+            } finally {
+                setLoading(false);
+            }
+        };
 
+        fetchData();
+    }, [id]);
+
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error}</div>;
 
     return (
         <div className="max-w-4xl mx-auto p-6 space-y-6 mt-16">
@@ -114,13 +42,13 @@ const SubCategoryDetailWorker = () => {
                 <div className="grid grid-cols-2 gap-4">
                     <input
                         type="text"
-                        value={subcategoryData.name}
+                        value={subcategory.name}
                         className="border rounded-md p-2"
                         readOnly
                     />
                     <input
                         type="text"
-                        value={subcategoryData.category}
+                        value={subcategory.category}
                         className="border rounded-md p-2"
                         readOnly
                     />
@@ -128,7 +56,7 @@ const SubCategoryDetailWorker = () => {
 
                 {/* Description */}
                 <textarea
-                    value={subcategoryData.description}
+                    value={subcategory.description}
                     className="w-full border rounded-md p-3 h-24"
                     readOnly
                 />
@@ -136,15 +64,25 @@ const SubCategoryDetailWorker = () => {
                 {/* Service Sessions */}
                 <div className="space-y-4">
                     <h3 className="font-semibold text-lg">Pilihan Sesi Layanan</h3>
-                    {subcategoryData.services.map((service, index) => (
+                    {subcategory.services.map((service, index) => (
                         <div
                             key={index}
                             className="flex items-center justify-between border rounded-md p-4"
                         >
                             <div className="flex-1">
                                 <span className="font-medium">{service.name}</span>
-                                <span className="ml-4 text-gray-600">{service.price}</span>
+                                <span className="ml-4 text-gray-600">
+                                    Rp {service.price.toLocaleString("id-ID")}
+                                </span>
                             </div>
+                            {!isWorker && (
+                                <a
+                                    href={`${window.location.href}/form`}
+                                    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                                >
+                                    Pesan
+                                </a>
+                            )}
                         </div>
                     ))}
                 </div>
@@ -153,9 +91,9 @@ const SubCategoryDetailWorker = () => {
                 <div className="space-y-4">
                     <h3 className="font-semibold text-lg">Pekerja</h3>
                     <div className="grid grid-cols-4 gap-4">
-                        {subcategoryData.workers.map((worker, index) => (
+                        {subcategory.workers.map((worker, index) => (
                             <div
-                                onClick={e => window.location = `/profilPekerja/${index}`}
+                                onClick={() => (window.location.href = `/profilPekerja/${worker.id}`)}
                                 key={index}
                                 className="cursor-pointer border rounded-md p-3 text-center space-y-2"
                             >
@@ -170,10 +108,12 @@ const SubCategoryDetailWorker = () => {
                     </div>
                 </div>
 
-                {/* Join Button */}
-                <button className="w-full bg-green-600 text-white py-3 rounded-md hover:bg-green-700">
-                    Bergabung
-                </button>
+                {/* Button Join (Only for Workers) */}
+                {isWorker && (
+                    <button className="w-full bg-green-600 text-white py-3 rounded-md hover:bg-green-700">
+                        Bergabung
+                    </button>
+                )}
 
                 {/* Testimonials */}
                 <div className="space-y-4">
@@ -215,4 +155,4 @@ const SubCategoryDetailWorker = () => {
     );
 };
 
-export default SubCategoryDetailWorker;
+export default SubCategoryDetail;
