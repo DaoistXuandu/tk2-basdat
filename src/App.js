@@ -34,10 +34,8 @@ function App() {
         <Route path="profile" element={<Profile role={cookies.status == role[0]} />} />
         <Route path="logout" element={<Logout />} />
 
-        <Route path="homepage" element={<Homepage role={cookies.status} />} />
-        <Route path="/homepage" element={<Homepage />} />
-        <Route path="/homepage/:id" element={<SubCategoryDetail />} />
-        <Route path="/" element={<Homepage />} />
+        <Route path="/homepage" element={<Homepage role={cookies.status} />} />
+        <Route path="/homepage/:id" element={<SubCategoryDetail role={cookies.status}/>} />
 
         <Route path="homepage/:id/form" element={<BookingForm />} />
 

@@ -44,30 +44,29 @@ async function createPesanan(data) {
         throw error;
     }
 }
-
-async function fetchSubcategoryDetails(subcategoryId) {
-    try {
-        const response = await fetchWithTimeout(`${PORT}/homepage?id=${subcategoryId}`);
-        if (!response.ok) throw new Error(`Failed to fetch subcategory details: ${response.status}`);
-        const data = await response.json();
-        
-        // Ensure the data structure matches what your frontend expects
-        return {
-            id: data[0].subkategori_id,
-            name: data[0].subkategori_nama,
-            description: data[0].subkategori_deskripsi,
-            category: data[0].kategori_nama, // Add this if needed
-            services: data.map(item => ({
-                id: item.sesi_id,
-                name: item.sesi_nama,
-                price: item.harga
-            }))
-        };
-    } catch (error) {
-        console.error("Error fetching subcategory details:", error.message);
-        throw error;
-    }
+function SubCategoryDetail({ subcategoryDetails }) {
+    return (
+        <div>
+            <h2>Service Sessions</h2>
+            {subcategoryDetails.services.map((service, index) => (
+                <div key={index}>
+                    <h3>{service.name}</h3>
+                    <p>{service.price}</p>
+                    <button>Book</button>
+                </div>
+            ))}
+        </div>
+    );
 }
+
+async function fetchSubcategoryDetails(id) {
+    const response = await fetch(`${PORT}/subcategory?id=${id}`);
+    if (!response.ok) {
+        throw new Error("Failed to fetch subcategory details");
+    }
+    return response.json();
+}
+
 
 // Fetch orders
 async function fetchOrders(userId) {
@@ -129,7 +128,7 @@ async function checkWorkerMembership(workerId, subcategoryId) {
 // Fetch all subcategories
 async function fetchAllSubcategories() {
     try {
-        const response = await fetchWithTimeout(`${PORT}/subcategories`);
+        const response = await fetchWithTimeout(`${PORT}/homepage`);
         if (!response.ok) throw new Error(`Failed to fetch subcategories: ${response.status}`);
         return await response.json();
     } catch (error) {
@@ -138,18 +137,7 @@ async function fetchAllSubcategories() {
     }
 }
 
-// Fetch testimonials by subcategory ID
-async function fetchTestimoniBySubkategori(subcategoryId) {
-    try {
-        if (!subcategoryId) throw new Error("Subcategory ID is required");
-        const response = await fetchWithTimeout(`${PORT}/subcategories/${subcategoryId}/testimonials`);
-        if (!response.ok) throw new Error(`Failed to fetch testimonials: ${response.status}`);
-        return await response.json();
-    } catch (error) {
-        console.error("Error fetching testimonials:", error.message);
-        throw error;
-    }
-}
+
 
 export {
     fetchServiceSessions,
@@ -160,5 +148,4 @@ export {
     joinSubcategory,
     checkWorkerMembership,
     fetchAllSubcategories,
-    fetchTestimoniBySubkategori,
 };

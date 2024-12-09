@@ -15,18 +15,18 @@ const BookingForm = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // const fetchSessions = async () => {
-        //     try {
-        //         const data = await fetchServiceSessions(); // Ambil sesi layanan dari database
-        //         setSessions(data);
-        //     } catch (error) {
-        //         setMessage('Gagal memuat sesi layanan.');
-        //     } finally {
-        //         setLoading(false);
-        //     }
-        // };
+        const fetchSessions = async () => {
+            try {
+                const data = await fetchServiceSessions(); // Ambil sesi layanan dari database
+                setSessions(data);
+            } catch (error) {
+                setMessage('Gagal memuat sesi layanan.');
+            } finally {
+                setLoading(false);
+            }
+        };
 
-        // fetchSessions();
+        fetchSessions();
     }, []);
 
     const handleChange = (e) => {
