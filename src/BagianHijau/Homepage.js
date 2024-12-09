@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { fetchHomepage } from '../controller/hijau';
 
@@ -10,24 +11,32 @@ const Homepage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const navigate = useNavigate(); // React Router hook for navigation
+
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const data = await fetchHomepage();
-                const categories = Array.from(
-                    new Map(data.map((item) => [item.kategori_id, { id: item.kategori_id, name: item.kategori_nama }]))
-                        .values()
-                );
-                setCategories(categories);
-                setSubCategories(
-                    data.map((item) => ({
+                const categoryMap = new Map();
+                const formattedSubCategories = [];
+
+                data.forEach((item) => {
+                    // Collect unique categories
+                    if (!categoryMap.has(item.kategori_id)) {
+                        categoryMap.set(item.kategori_id, { id: item.kategori_id, name: item.kategori_nama });
+                    }
+                    // Add subcategories with category reference
+                    formattedSubCategories.push({
                         id: item.subkategori_id,
                         categoryId: item.kategori_id,
+                        categoryName: item.kategori_nama,
                         name: item.subkategori_nama,
                         description: item.subkategori_deskripsi || '',
-                        sessions: [],
-                    }))
-                );
+                    });
+                });
+
+                setCategories(Array.from(categoryMap.values()));
+                setSubCategories(formattedSubCategories);
             } catch (err) {
                 setError(err.message || 'Error fetching data');
             } finally {
@@ -38,8 +47,13 @@ const Homepage = () => {
         fetchData();
     }, []);
 
+    const handleSubCategoryClick = (subcategoryId) => {
+        // Ensure navigation to the specific subcategory detail page
+        navigate(`/homepage/${subcategoryId}`);
+    };
+
     const filteredSubCategories = subCategories.filter((sub) =>
-        (!selectedCategory || sub.categoryId === parseInt(selectedCategory)) &&
+        (!selectedCategory || sub.categoryId === selectedCategory) &&
         (!searchTerm || sub.name.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
@@ -80,15 +94,16 @@ const Homepage = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredSubCategories.map((subCategory) => (
-                    <a
+                    <div
                         key={subCategory.id}
                         className="border rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow"
-                        href={`/homepage/${subCategory.id}`}
+                        onClick={() => handleSubCategoryClick(subCategory.id)}
                     >
                         <h3 className="text-xl font-semibold mb-2">{subCategory.name}</h3>
                         <p className="text-gray-600 mb-2">{subCategory.description}</p>
-                        <p className="text-sm text-gray-500">Details available in the subcategory page.</p>
-                    </a>
+                        <p className="text-sm text-gray-500">Category: {subCategory.categoryName}</p>
+                        <p className="text-sm text-gray-500">Click to view details</p>
+                    </div>
                 ))}
             </div>
         </div>
@@ -96,4 +111,3 @@ const Homepage = () => {
 };
 
 export default Homepage;
-    
