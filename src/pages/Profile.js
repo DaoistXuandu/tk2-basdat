@@ -4,7 +4,6 @@ import { getUser, updateUser, uploadImage } from "../controller/kuning";
 
 export default function Profile({ role }) {
     const [cookies, setCookie] = useCookies(['userId', 'status', 'name'])
-
     const [update, setUpdate] = useState(false);
 
     const [name, setName] = useState("")
