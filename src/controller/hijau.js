@@ -50,7 +50,7 @@ async function fetchSubcategoryDetails(subcategoryId) {
         const response = await fetchWithTimeout(`${PORT}/homepage?id=${subcategoryId}`);
         if (!response.ok) throw new Error(`Failed to fetch subcategory details: ${response.status}`);
         const data = await response.json();
-
+        
         // Ensure the data structure matches what your frontend expects
         return {
             id: data[0].subkategori_id,
